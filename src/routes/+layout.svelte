@@ -9,6 +9,25 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<main class="px-4 sm:px-6">
+<header class="sticky top-0 z-50 border-b border-border/20 backdrop-blur-2xl">
+	<div class="mx-auto max-w-7xl p-4">
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+		<a href="/">
+			<h1 class="text-xl/none font-bold">
+				wallbums<span class="text-sky-500">.</span>
+			</h1>
+		</a>
+	</div>
+</header>
+
+<main>
 	{@render children?.()}
 </main>
+
+<footer class="border-t border-border/20">
+	<div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-8">
+		<p class="text-xs text-muted-foreground">
+			&copy; {new Date().getFullYear()} wallbums.
+		</p>
+	</div>
+</footer>
