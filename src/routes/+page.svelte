@@ -4,14 +4,16 @@
 	import Smartphone from '@lucide/svelte/icons/smartphone';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
+
+	const { data } = $props();
 </script>
 
 <div class="grid-auto grid gap-6">
-	{#each { length: 30 }}
+	{#each data.items as item (item.Key)}
 		<div class="flex flex-col gap-2">
 			<img
 				class="aspect-video"
-				src="https://placehold.co/3840x2160"
+				src="https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.dev/{item.Key}"
 				alt=""
 				width="1280"
 				height="720"
