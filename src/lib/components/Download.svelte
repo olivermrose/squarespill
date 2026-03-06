@@ -91,18 +91,20 @@
 				<span class="mt-1 inline-block text-sm text-neutral-500">{wallpaper.artist}</span>
 			</div>
 
-			<div class="space-y-2">
-				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
-					<Tag class="size-3" />
-					<span>Tags</span>
-				</div>
+			{#if wallpaper.tags?.length}
+				<div class="space-y-2">
+					<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
+						<Tag class="size-3" />
+						<span>Tags</span>
+					</div>
 
-				<div class="flex flex-wrap gap-1.5">
-					{#each { length: 5 }}
-						<span class="rounded-full bg-neutral-800 px-2.5 py-1 text-xs text-white">tag</span>
-					{/each}
+					<div class="flex flex-wrap gap-1.5">
+						{#each wallpaper.tags as tag (tag)}
+							<span class="rounded-full bg-neutral-800 px-2.5 py-1 text-xs text-white">tag</span>
+						{/each}
+					</div>
 				</div>
-			</div>
+			{/if}
 
 			<div class="space-y-2">
 				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
