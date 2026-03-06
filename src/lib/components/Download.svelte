@@ -13,6 +13,7 @@
 
 	const { wallpaper, onclose }: Props = $props();
 
+	let el = $state<HTMLDivElement>();
 	let resolution = $state<keyof typeof RESOLUTIONS>("uhd");
 	let format = $state<"png" | "jpg" | "webp" | "avif">("webp");
 	let downloading = $state(false);
@@ -57,6 +58,10 @@
 			ease: "circOut",
 		},
 	}}
+	onAnimationComplete={() => {
+		el?.scrollIntoView({ behavior: "smooth", block: "center" });
+	}}
+	bind:ref={el}
 >
 	<motion.div
 		class="flex w-full flex-col md:flex-row"
@@ -65,7 +70,7 @@
 		exit={{ opacity: 0 }}
 		transition={{ duration: 0.1, delay: 0.1 }}
 	>
-		<div class="max-w-3/5 relative aspect-video w-full shrink-0">
+		<div class="relative aspect-video w-full max-w-3/5 shrink-0">
 			<img
 				class="object-cover"
 				src="{R2_PUBLIC_URL}/{wallpaper.file}.avif"
@@ -74,7 +79,7 @@
 			/>
 
 			<button
-				class="absolute right-4 top-4 cursor-pointer rounded-full bg-black/50 p-2 text-white/80 backdrop-blur-sm transition-colors hover:bg-black/70 hover:text-white"
+				class="absolute top-4 right-4 cursor-pointer rounded-full bg-black/50 p-2 text-white/80 backdrop-blur-sm transition-colors hover:bg-black/70 hover:text-white"
 				aria-label="Close expanded view"
 				onclick={onclose}
 			>
@@ -84,7 +89,7 @@
 
 		<div class="flex w-full flex-col justify-between gap-y-6 p-6 md:p-8">
 			<div>
-				<h2 class="text-balance text-2xl font-semibold tracking-tight text-white">
+				<h2 class="text-2xl font-semibold tracking-tight text-balance text-white">
 					{wallpaper.title}
 				</h2>
 
@@ -92,7 +97,7 @@
 			</div>
 
 			<div class="space-y-2">
-				<div class="flex items-center gap-1.5 text-xs font-medium uppercase text-neutral-500">
+				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
 					<Tag class="size-3" />
 					<span>Tags</span>
 				</div>
@@ -105,7 +110,7 @@
 			</div>
 
 			<div class="space-y-2">
-				<div class="flex items-center gap-1.5 text-xs font-medium uppercase text-neutral-500">
+				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
 					<Monitor class="size-3" />
 					<span>Resolution</span>
 				</div>
@@ -124,7 +129,7 @@
 			</div>
 
 			<div class="space-y-2">
-				<div class="flex items-center gap-1.5 text-xs font-medium uppercase text-neutral-500">
+				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
 					<Eye class="size-3" />
 					<span>Format</span>
 				</div>
