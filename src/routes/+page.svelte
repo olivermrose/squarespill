@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Download from '$lib/components/Download.svelte';
-	import Tile from '$lib/components/Tile.svelte';
-	import { AnimatePresence } from 'motion-sv';
+	import Download from "$lib/components/Download.svelte";
+	import Tile from "$lib/components/Tile.svelte";
+	import { AnimatePresence } from "motion-sv";
 
 	const { data } = $props();
 

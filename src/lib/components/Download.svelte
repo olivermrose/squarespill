@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { motion } from 'motion-sv';
-	import { X, Download, Eye, Tag, Monitor, Loader } from '@lucide/svelte';
-	import { RadioGroup } from 'bits-ui';
-	import type { Wallpaper } from '$lib/server/db/schema';
-	import { downloadWallpaper } from '$lib/wallpaper.remote';
-	import { RESOLUTIONS, R2_PUBLIC_URL } from '$lib/constants';
+	import type { Wallpaper } from "$lib/server/db/schema";
+	import { R2_PUBLIC_URL, RESOLUTIONS } from "$lib/constants";
+	import { downloadWallpaper } from "$lib/wallpaper.remote";
+	import { Download, Eye, Loader, Monitor, Tag, X } from "@lucide/svelte";
+	import { RadioGroup } from "bits-ui";
+	import { motion } from "motion-sv";
 
 	interface Props {
 		wallpaper: Wallpaper;
@@ -13,8 +13,8 @@
 
 	const { wallpaper, onclose }: Props = $props();
 
-	let resolution = $state<keyof typeof RESOLUTIONS>('uhd');
-	let format = $state<'png' | 'jpg' | 'webp' | 'avif'>('webp');
+	let resolution = $state<keyof typeof RESOLUTIONS>("uhd");
+	let format = $state<"png" | "jpg" | "webp" | "avif">("webp");
 	let downloading = $state(false);
 
 	async function handleDownload() {
@@ -24,14 +24,14 @@
 			const result = await downloadWallpaper({
 				file: wallpaper.file,
 				format,
-				resolution
+				resolution,
 			});
 
 			const bytes = Uint8Array.from(atob(result.data), (c) => c.charCodeAt(0));
 			const blob = new Blob([bytes], { type: result.mimeType });
 			const url = URL.createObjectURL(blob);
 
-			const a = document.createElement('a');
+			const a = document.createElement("a");
 			a.href = url;
 			a.download = result.filename;
 
@@ -49,11 +49,11 @@
 <motion.div
 	class="overflow-hidden bg-black"
 	initial={{ height: 0, opacity: 0 }}
-	animate={{ height: 'auto', opacity: 1 }}
+	animate={{ height: "auto", opacity: 1 }}
 	exit={{ height: 0, opacity: 0 }}
 	transition={{
-		height: { type: 'spring', stiffness: 300, damping: 30 },
-		opacity: { duration: 0.2 }
+		height: { type: "spring", stiffness: 300, damping: 30 },
+		opacity: { duration: 0.2 },
 	}}
 >
 	<div class="flex w-full flex-col md:flex-row">
@@ -122,7 +122,7 @@
 				</div>
 
 				<RadioGroup.Root class="flex items-center gap-2" bind:value={format}>
-					{#each ['png', 'jpg', 'webp', 'avif'] as format (format)}
+					{#each ["png", "jpg", "webp", "avif"] as format (format)}
 						<RadioGroup.Item
 							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs text-white data-[state=checked]:bg-white data-[state=checked]:text-black"
 							value={format}
@@ -145,7 +145,7 @@
 					<Download class="size-4" />
 				{/if}
 
-				{downloading ? 'Downloading...' : 'Download'}
+				{downloading ? "Downloading..." : "Download"}
 			</button>
 		</div>
 	</div>

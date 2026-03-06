@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { R2_PUBLIC_URL } from '$lib/constants';
-	import type { Wallpaper } from '$lib/server/db/schema';
+	import type { Wallpaper } from "$lib/server/db/schema";
+	import { R2_PUBLIC_URL } from "$lib/constants";
 
 	interface Props {
 		wallpaper: Wallpaper;
@@ -19,7 +19,7 @@
 	role="none"
 	onclick={select}
 	onkeydown={(event) => {
-		if (event.key === 'Enter' || event.key === ' ') {
+		if (event.key === "Enter" || event.key === " ") {
 			select();
 		}
 	}}
