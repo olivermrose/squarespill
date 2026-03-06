@@ -65,9 +65,9 @@
 		exit={{ opacity: 0 }}
 		transition={{ duration: 0.1, delay: 0.1 }}
 	>
-		<div class="relative aspect-video w-full max-w-3/5 shrink-0">
+		<div class="relative aspect-video w-full shrink-0 max-md:hidden md:max-w-3/5">
 			<img
-				class="object-cover"
+				class="h-full object-cover"
 				src="{R2_PUBLIC_URL}/{wallpaper.file}.avif"
 				alt=""
 				fetchpriority="high"
@@ -82,7 +82,7 @@
 			</button>
 		</div>
 
-		<div class="flex w-full flex-col justify-between gap-y-6 p-6 md:p-8">
+		<div class="flex w-full shrink flex-col justify-between gap-y-6 p-6 md:p-8">
 			<div>
 				<h2 class="text-2xl font-semibold tracking-tight text-balance text-white">
 					{wallpaper.title}
@@ -110,7 +110,7 @@
 					<span>Resolution</span>
 				</div>
 
-				<RadioGroup.Root class="flex items-center gap-2" bind:value={resolution}>
+				<RadioGroup.Root class="flex flex-wrap items-center gap-2" bind:value={resolution}>
 					{#each Object.entries(RESOLUTIONS) as [name, res] (name)}
 						<RadioGroup.Item
 							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs text-white data-[state=checked]:bg-white data-[state=checked]:text-black"
