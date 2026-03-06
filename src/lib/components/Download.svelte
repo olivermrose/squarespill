@@ -22,7 +22,7 @@
 </script>
 
 <motion.div
-	class="overflow-hidden"
+	class="overflow-hidden bg-black"
 	initial={{ height: 0, opacity: 0 }}
 	animate={{ height: 'auto', opacity: 1 }}
 	exit={{ height: 0, opacity: 0 }}
@@ -51,11 +51,11 @@
 
 		<div class="flex w-full flex-col justify-between gap-y-6 p-6 md:p-8">
 			<div>
-				<h2 class="text-2xl font-semibold tracking-tight text-balance">{wallpaper.title}</h2>
+				<h2 class="text-2xl font-semibold tracking-tight text-balance text-white">
+					{wallpaper.title}
+				</h2>
 
-				<div class="mt-2 flex items-center gap-2">
-					<span class="text-sm">{wallpaper.artist}</span>
-				</div>
+				<span class="mt-1 inline-block text-sm text-neutral-500">{wallpaper.artist}</span>
 			</div>
 
 			<div class="space-y-2">
@@ -66,7 +66,7 @@
 
 				<div class="flex flex-wrap gap-1.5">
 					{#each { length: 5 }}
-						<span class="rounded-full bg-neutral-100 px-2.5 py-1 text-xs">tag</span>
+						<span class="rounded-full bg-neutral-800 px-2.5 py-1 text-xs text-white">tag</span>
 					{/each}
 				</div>
 			</div>
@@ -80,7 +80,7 @@
 				<RadioGroup.Root class="flex items-center gap-2" bind:value={resolution}>
 					{#each Object.entries(resolutions) as [name, res] (name)}
 						<RadioGroup.Item
-							class="flex items-center border border-neutral-200 px-3 py-1.5 text-xs data-[state=checked]:bg-black data-[state=checked]:text-white"
+							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs text-white data-[state=checked]:bg-white data-[state=checked]:text-black"
 							value={name}
 						>
 							<span class="font-medium">{name.toUpperCase()}</span>
@@ -99,7 +99,7 @@
 				<RadioGroup.Root class="flex items-center gap-2" bind:value={format}>
 					{#each ['png', 'jpg', 'webp', 'avif'] as format (format)}
 						<RadioGroup.Item
-							class="flex items-center border border-neutral-200 px-3 py-1.5 text-xs data-[state=checked]:bg-black data-[state=checked]:text-white"
+							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs text-white data-[state=checked]:bg-white data-[state=checked]:text-black"
 							value={format}
 						>
 							{format.toUpperCase()}
@@ -109,7 +109,7 @@
 			</div>
 
 			<button
-				class="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-black px-6 py-3 text-sm font-medium text-white hover:opacity-90"
+				class="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-white px-6 py-3 text-sm font-medium hover:opacity-90"
 				type="button"
 			>
 				<Download class="size-4" />
