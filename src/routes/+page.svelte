@@ -5,47 +5,42 @@
 
 	const { data } = $props();
 
-	let container = $state<HTMLDivElement>();
 	let selected = $state<number>();
-	let columns = $state(4);
+	let query = $state("");
 
-	const rows = $derived.by(() => {
-		const rows = [];
+	const filtered = $derived.by(() => {
+		const q = query.trim().toLowerCase();
+		if (!q) return data.wallpapers;
 
-		for (let i = 0; i < data.wallpapers.length; i += columns) {
-			rows.push(data.wallpapers.slice(i, i + columns));
-		}
-
-		return rows;
+		return data.wallpapers.filter((w) => {
+			return (
+				w.title.toLowerCase().includes(q) ||
+				w.artist.toLowerCase().includes(q) ||
+				w.tags?.some((t) => t.toLowerCase().includes(q))
+			);
+		});
 	});
-
-	function updateColumns() {
-		if (container) {
-			columns = Math.max(1, Math.floor(container.offsetWidth / 350));
-		}
-	}
 </script>
 
-<svelte:window onresize={updateColumns} />
+<input
+	id="search"
+	class="block w-full border-y border-neutral-500/20 bg-transparent px-4 py-3 outline-none placeholder:text-neutral-500"
+	type="search"
+	placeholder="Search by title, artist, or tag..."
+	bind:value={query}
+/>
 
-<div class="w-full" bind:this={container}>
-	<!-- eslint-disable-next-line svelte/require-each-key -->
-	{#each rows as row}
-		{@const expanded = row.find((w) => w.id === selected)}
+<div class="grid-auto grid w-full grid-flow-dense">
+	{#each filtered as wallpaper (wallpaper.id)}
+		{@const expanded = wallpaper.id === selected ? wallpaper : undefined}
 
-		<div>
-			<div class="grid-auto grid">
-				{#each row as wallpaper (wallpaper.id)}
-					<Tile {wallpaper} bind:selected />
-				{/each}
-			</div>
+		<Tile {wallpaper} bind:selected />
 
-			<AnimatePresence>
-				{#if expanded}
-					<Download wallpaper={expanded} onclose={() => (selected = undefined)} />
-				{/if}
-			</AnimatePresence>
-		</div>
+		<AnimatePresence>
+			{#if expanded}
+				<Download wallpaper={expanded} onclose={() => (selected = undefined)} />
+			{/if}
+		</AnimatePresence>
 	{/each}
 </div>
 

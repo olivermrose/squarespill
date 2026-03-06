@@ -48,7 +48,7 @@
 </script>
 
 <motion.div
-	class="overflow-hidden bg-black"
+	class="col-span-full overflow-hidden bg-black"
 	initial={{ height: 0 }}
 	animate={{ height: "auto" }}
 	exit={{ height: 0 }}
