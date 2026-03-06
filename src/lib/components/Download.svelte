@@ -48,16 +48,18 @@
 
 <motion.div
 	class="overflow-hidden bg-black"
-	initial={{ height: 0, opacity: 0 }}
-	animate={{ height: "auto", opacity: 1 }}
-	exit={{ height: 0, opacity: 0 }}
+	initial={{ height: 0 }}
+	animate={{ height: "auto" }}
+	exit={{ height: 0 }}
 	transition={{
-		height: { type: "spring", stiffness: 300, damping: 30 },
-		opacity: { duration: 0.2 },
+		height: {
+			duration: 0.25,
+			ease: "circOut",
+		},
 	}}
 >
 	<div class="flex w-full flex-col md:flex-row">
-		<div class="relative aspect-video w-full max-w-3/5 shrink-0">
+		<div class="max-w-3/5 relative aspect-video w-full shrink-0">
 			<img
 				class="object-cover"
 				src="{R2_PUBLIC_URL}/{wallpaper.file}.avif"
@@ -66,7 +68,7 @@
 			/>
 
 			<button
-				class="absolute top-4 right-4 cursor-pointer rounded-full bg-black/50 p-2 text-white/80 backdrop-blur-sm transition-colors hover:bg-black/70 hover:text-white"
+				class="absolute right-4 top-4 cursor-pointer rounded-full bg-black/50 p-2 text-white/80 backdrop-blur-sm transition-colors hover:bg-black/70 hover:text-white"
 				aria-label="Close expanded view"
 				onclick={onclose}
 			>
@@ -76,7 +78,7 @@
 
 		<div class="flex w-full flex-col justify-between gap-y-6 p-6 md:p-8">
 			<div>
-				<h2 class="text-2xl font-semibold tracking-tight text-balance text-white">
+				<h2 class="text-balance text-2xl font-semibold tracking-tight text-white">
 					{wallpaper.title}
 				</h2>
 
@@ -84,7 +86,7 @@
 			</div>
 
 			<div class="space-y-2">
-				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
+				<div class="flex items-center gap-1.5 text-xs font-medium uppercase text-neutral-500">
 					<Tag class="size-3" />
 					<span>Tags</span>
 				</div>
@@ -97,7 +99,7 @@
 			</div>
 
 			<div class="space-y-2">
-				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
+				<div class="flex items-center gap-1.5 text-xs font-medium uppercase text-neutral-500">
 					<Monitor class="size-3" />
 					<span>Resolution</span>
 				</div>
@@ -116,7 +118,7 @@
 			</div>
 
 			<div class="space-y-2">
-				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
+				<div class="flex items-center gap-1.5 text-xs font-medium uppercase text-neutral-500">
 					<Eye class="size-3" />
 					<span>Format</span>
 				</div>
