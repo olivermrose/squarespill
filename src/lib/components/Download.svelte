@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { motion } from 'motion-sv';
-	import { X, Download, Eye, Tag, Monitor } from '@lucide/svelte';
+	import { X, Download, Eye, Tag, Monitor, Loader } from '@lucide/svelte';
 	import { RadioGroup } from 'bits-ui';
 	import type { Wallpaper } from '$lib/server/db/schema';
+	import { downloadWallpaper } from '$lib/wallpaper.remote';
+	import { RESOLUTIONS, R2_PUBLIC_URL } from '$lib/constants';
 
 	interface Props {
 		wallpaper: Wallpaper;
@@ -11,14 +13,37 @@
 
 	const { wallpaper, onclose }: Props = $props();
 
-	const resolutions = {
-		fhd: '1920x1080',
-		qhd: '2560x1440',
-		uhd: '3840x2160'
-	};
+	let resolution = $state<keyof typeof RESOLUTIONS>('uhd');
+	let format = $state<'png' | 'jpg' | 'webp' | 'avif'>('webp');
+	let downloading = $state(false);
 
-	let resolution = $state<keyof typeof resolutions>('uhd');
-	let format = $state('webp');
+	async function handleDownload() {
+		downloading = true;
+
+		try {
+			const result = await downloadWallpaper({
+				file: wallpaper.file,
+				format,
+				resolution
+			});
+
+			const bytes = Uint8Array.from(atob(result.data), (c) => c.charCodeAt(0));
+			const blob = new Blob([bytes], { type: result.mimeType });
+			const url = URL.createObjectURL(blob);
+
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = result.filename;
+
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+
+			URL.revokeObjectURL(url);
+		} finally {
+			downloading = false;
+		}
+	}
 </script>
 
 <motion.div
@@ -35,7 +60,7 @@
 		<div class="relative aspect-video w-full max-w-3/5 shrink-0">
 			<img
 				class="object-cover"
-				src="https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.dev/{wallpaper.file}.avif"
+				src="{R2_PUBLIC_URL}/{wallpaper.file}.avif"
 				alt=""
 				fetchpriority="high"
 			/>
@@ -78,13 +103,13 @@
 				</div>
 
 				<RadioGroup.Root class="flex items-center gap-2" bind:value={resolution}>
-					{#each Object.entries(resolutions) as [name, res] (name)}
+					{#each Object.entries(RESOLUTIONS) as [name, res] (name)}
 						<RadioGroup.Item
 							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs text-white data-[state=checked]:bg-white data-[state=checked]:text-black"
 							value={name}
 						>
 							<span class="font-medium">{name.toUpperCase()}</span>
-							<span class="ml-1 text-[10px] opacity-60">{res}</span>
+							<span class="ml-1 text-[10px] opacity-60">{res.width}x{res.height}</span>
 						</RadioGroup.Item>
 					{/each}
 				</RadioGroup.Root>
@@ -109,11 +134,18 @@
 			</div>
 
 			<button
-				class="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-white px-6 py-3 text-sm font-medium hover:opacity-90"
+				class="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-white px-6 py-3 text-sm font-medium hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 				type="button"
+				onclick={handleDownload}
+				disabled={downloading}
 			>
-				<Download class="size-4" />
-				Download
+				{#if downloading}
+					<Loader class="size-4 animate-spin" />
+				{:else}
+					<Download class="size-4" />
+				{/if}
+
+				{downloading ? 'Downloading...' : 'Download'}
 			</button>
 		</div>
 	</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { R2_PUBLIC_URL } from '$lib/constants';
 	import type { Wallpaper } from '$lib/server/db/schema';
 
 	interface Props {
@@ -25,7 +26,7 @@
 >
 	<img
 		class="object-cover transition-transform duration-500 group-hover:scale-105"
-		src="https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.dev/{wallpaper.file}.avif"
+		src="{R2_PUBLIC_URL}/{wallpaper.file}.avif"
 		alt=""
 	/>
 
