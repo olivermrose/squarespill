@@ -1,64 +1,50 @@
 <script lang="ts">
-	import Download from '@lucide/svelte/icons/download';
-	import Monitor from '@lucide/svelte/icons/monitor';
-	import Smartphone from '@lucide/svelte/icons/smartphone';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Button } from '$lib/components/ui/button';
+	import Download from '$lib/components/Download.svelte';
+	import Tile from '$lib/components/Tile.svelte';
+	import { AnimatePresence } from 'motion-sv';
 
 	const { data } = $props();
+
+	let container = $state<HTMLDivElement>();
+	let selected = $state<string>();
+	let columns = $state(4);
+
+	const rows = $derived.by(() => {
+		const rows = [];
+
+		for (let i = 0; i < data.items.length; i += columns) {
+			rows.push(data.items.slice(i, i + columns));
+		}
+
+		return rows;
+	});
+
+	function updateColumns() {
+		if (container) {
+			columns = Math.max(1, Math.floor(container.offsetWidth / 350));
+		}
+	}
 </script>
 
-<div class="grid-auto grid gap-6">
-	{#each data.items as item (item.Key)}
-		<div class="flex flex-col gap-2">
-			<img
-				class="aspect-video"
-				src="https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.dev/{item.Key}"
-				alt=""
-				width="1280"
-				height="720"
-			/>
+<svelte:window onresize={updateColumns} />
 
-			<div class="flex items-center justify-between">
-				<div class="flex flex-col">
-					<span class="font-semibold">Album name</span>
-					<span class="text-sm text-muted-foreground">Artist name</span>
-				</div>
+<div class="w-full" bind:this={container}>
+	<!-- eslint-disable-next-line svelte/require-each-key -->
+	{#each rows as row}
+		{@const expanded = row.find((w) => w.Key === selected)}
 
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger>
-						{#snippet child({ props })}
-							<Button size="icon" variant="outline" {...props}>
-								<Download class="size-4" />
-							</Button>
-						{/snippet}
-					</DropdownMenu.Trigger>
-
-					<DropdownMenu.Content>
-						<DropdownMenu.Sub>
-							<DropdownMenu.SubTrigger>
-								<Smartphone /> Mobile
-							</DropdownMenu.SubTrigger>
-
-							<DropdownMenu.SubContent>
-								<!-- Other -->
-								<DropdownMenu.Item>4K Resolution</DropdownMenu.Item>
-							</DropdownMenu.SubContent>
-						</DropdownMenu.Sub>
-
-						<DropdownMenu.Sub>
-							<DropdownMenu.SubTrigger>
-								<Monitor /> Desktop
-							</DropdownMenu.SubTrigger>
-
-							<DropdownMenu.SubContent>
-								<!-- Other -->
-								<DropdownMenu.Item>4K Resolution</DropdownMenu.Item>
-							</DropdownMenu.SubContent>
-						</DropdownMenu.Sub>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
+		<div>
+			<div class="grid-auto grid">
+				{#each row as wallpaper (wallpaper.Key)}
+					<Tile {wallpaper} bind:selected />
+				{/each}
 			</div>
+
+			<AnimatePresence>
+				{#if expanded}
+					<Download wallpaper={expanded} onclose={() => (selected = undefined)} />
+				{/if}
+			</AnimatePresence>
 		</div>
 	{/each}
 </div>
