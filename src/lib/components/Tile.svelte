@@ -27,7 +27,7 @@
 	<img
 		class="object-cover transition-transform duration-500 group-hover:scale-105"
 		src="{R2_PUBLIC_URL}/{wallpaper.file}.avif"
-		alt=""
+		alt="{wallpaper.title} by {wallpaper.artist}"
 	/>
 
 	<div

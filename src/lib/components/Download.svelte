@@ -69,7 +69,7 @@
 			<img
 				class="h-full object-cover"
 				src="{R2_PUBLIC_URL}/{wallpaper.file}.avif"
-				alt=""
+				alt="{wallpaper.title} by {wallpaper.artist}"
 				fetchpriority="high"
 			/>
 
