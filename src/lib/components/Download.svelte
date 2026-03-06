@@ -58,7 +58,13 @@
 		},
 	}}
 >
-	<div class="flex w-full flex-col md:flex-row">
+	<motion.div
+		class="flex w-full flex-col md:flex-row"
+		initial={{ opacity: 0 }}
+		animate={{ opacity: 1 }}
+		exit={{ opacity: 0 }}
+		transition={{ duration: 0.1, delay: 0.1 }}
+	>
 		<div class="max-w-3/5 relative aspect-video w-full shrink-0">
 			<img
 				class="object-cover"
@@ -150,5 +156,5 @@
 				{downloading ? "Downloading..." : "Download"}
 			</button>
 		</div>
-	</div>
+	</motion.div>
 </motion.div>
