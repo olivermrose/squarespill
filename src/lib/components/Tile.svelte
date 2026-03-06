@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { _Object } from '@aws-sdk/client-s3';
+	import type { Wallpaper } from '$lib/server/db/schema';
 
 	interface Props {
-		wallpaper: _Object;
-		selected?: string;
+		wallpaper: Wallpaper;
+		selected?: number;
 	}
 
 	let { wallpaper, selected = $bindable() }: Props = $props();
 
 	function select() {
-		selected = selected === wallpaper.Key ? undefined : wallpaper.Key;
+		selected = selected === wallpaper.id ? undefined : wallpaper.id;
 	}
 </script>
 
@@ -25,7 +25,7 @@
 >
 	<img
 		class="object-cover transition-transform duration-500 group-hover:scale-105"
-		src="https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.dev/{wallpaper.Key}"
+		src="https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.dev/{wallpaper.file}.avif"
 		alt=""
 	/>
 
@@ -35,8 +35,8 @@
 		<div
 			class="w-full translate-y-full p-3 transition-transform duration-300 group-hover:translate-y-0"
 		>
-			<p class="truncate text-sm font-medium text-white">Album name</p>
-			<p class="truncate text-xs text-white/60">Artist name</p>
+			<p class="truncate text-sm font-medium text-white">{wallpaper.title}</p>
+			<p class="truncate text-xs text-white/60">{wallpaper.artist}</p>
 		</div>
 	</div>
 </div>

@@ -2,10 +2,10 @@
 	import { motion } from 'motion-sv';
 	import { X, Download, Eye, Tag, Monitor } from '@lucide/svelte';
 	import { RadioGroup } from 'bits-ui';
-	import type { _Object } from '@aws-sdk/client-s3';
+	import type { Wallpaper } from '$lib/server/db/schema';
 
 	interface Props {
-		wallpaper: _Object;
+		wallpaper: Wallpaper;
 		onclose: () => void;
 	}
 
@@ -35,7 +35,7 @@
 		<div class="relative aspect-video w-full max-w-3/5 shrink-0">
 			<img
 				class="object-cover"
-				src="https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.dev/{wallpaper.Key}"
+				src="https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.dev/{wallpaper.file}.avif"
 				alt=""
 				fetchpriority="high"
 			/>
@@ -51,10 +51,10 @@
 
 		<div class="flex w-full flex-col justify-between gap-y-6 p-6 md:p-8">
 			<div>
-				<h2 class="text-2xl font-semibold tracking-tight text-balance">Album name</h2>
+				<h2 class="text-2xl font-semibold tracking-tight text-balance">{wallpaper.title}</h2>
 
 				<div class="mt-2 flex items-center gap-2">
-					<span class="text-sm">Album artist</span>
+					<span class="text-sm">{wallpaper.artist}</span>
 				</div>
 			</div>
 

@@ -6,14 +6,14 @@
 	const { data } = $props();
 
 	let container = $state<HTMLDivElement>();
-	let selected = $state<string>();
+	let selected = $state<number>();
 	let columns = $state(4);
 
 	const rows = $derived.by(() => {
 		const rows = [];
 
-		for (let i = 0; i < data.items.length; i += columns) {
-			rows.push(data.items.slice(i, i + columns));
+		for (let i = 0; i < data.wallpapers.length; i += columns) {
+			rows.push(data.wallpapers.slice(i, i + columns));
 		}
 
 		return rows;
@@ -31,11 +31,11 @@
 <div class="w-full" bind:this={container}>
 	<!-- eslint-disable-next-line svelte/require-each-key -->
 	{#each rows as row}
-		{@const expanded = row.find((w) => w.Key === selected)}
+		{@const expanded = row.find((w) => w.id === selected)}
 
 		<div>
 			<div class="grid-auto grid">
-				{#each row as wallpaper (wallpaper.Key)}
+				{#each row as wallpaper (wallpaper.id)}
 					<Tile {wallpaper} bind:selected />
 				{/each}
 			</div>
