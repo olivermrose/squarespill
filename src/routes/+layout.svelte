@@ -14,7 +14,7 @@
 		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a href="/">
 			<h1 class="text-xl/none font-bold">
-				wallbums<span class="text-sky-500">.</span>
+				square<span class="text-neutral-400">spill</span>
 			</h1>
 		</a>
 	</div>
@@ -27,7 +27,7 @@
 <footer class="border-t border-neutral-500/20">
 	<div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-8">
 		<p class="text-xs text-neutral-500">
-			&copy; {new Date().getFullYear()} wallbums.
+			&copy; {new Date().getFullYear()} squarespill
 		</p>
 	</div>
 </footer>
