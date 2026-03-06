@@ -52,12 +52,7 @@
 	initial={{ height: 0 }}
 	animate={{ height: "auto" }}
 	exit={{ height: 0 }}
-	transition={{
-		height: {
-			duration: 0.25,
-			ease: "circOut",
-		},
-	}}
+	transition={{ duration: 0.25, ease: "circOut" }}
 	onAnimationComplete={() => {
 		el?.scrollIntoView({ behavior: "smooth", block: "center" });
 	}}
