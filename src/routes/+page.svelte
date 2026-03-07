@@ -35,14 +35,12 @@
 
 	<div class="absolute inset-0 bg-linear-to-r from-black via-black/50 to-black/10"></div>
 
-	<div class="relative flex h-full items-center px-10 py-16">
+	<div class="relative flex h-full items-end p-12">
 		<hgroup class="max-w-3xl">
-			<h1 class="text-6xl font-normal tracking-tight text-neutral-50">
-				Non reprehenderit in ea excepteur.
-			</h1>
+			<h1 class="text-6xl font-normal tracking-tight text-neutral-50">Soundtrack your setup.</h1>
 
 			<p class="mt-3 font-mono text-lg text-neutral-300/80">
-				Cupidatat voluptate ullamco dolore tempor.
+				Visualize your taste. Extended cover arts as wallpapers, free to download.
 			</p>
 		</hgroup>
 	</div>
