@@ -54,7 +54,7 @@
 
 	<div class="relative flex h-full items-center px-10 py-16">
 		<hgroup class="max-w-3xl">
-			<h1 class="text-6xl font-normal tracking-tight text-white">
+			<h1 class="text-6xl font-normal tracking-tight text-neutral-50">
 				Non reprehenderit in ea excepteur.
 			</h1>
 

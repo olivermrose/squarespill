@@ -48,7 +48,7 @@
 </script>
 
 <motion.div
-	class="col-span-full overflow-hidden bg-black"
+	class="col-span-full overflow-hidden"
 	initial={{ height: 0 }}
 	animate={{ height: "auto" }}
 	exit={{ height: 0 }}
@@ -84,7 +84,7 @@
 
 		<div class="flex w-full shrink flex-col justify-between gap-y-6 p-6 md:p-8">
 			<div>
-				<h2 class="text-2xl font-semibold tracking-tight text-balance text-white">
+				<h2 class="text-2xl font-semibold tracking-tight text-balance">
 					{wallpaper.title}
 				</h2>
 
@@ -100,7 +100,7 @@
 
 					<div class="flex flex-wrap gap-1.5">
 						{#each wallpaper.tags as tag (tag)}
-							<span class="rounded-full bg-neutral-800 px-2.5 py-1 text-xs text-white">tag</span>
+							<span class="rounded-full bg-neutral-800 px-2.5 py-1 text-xs">tag</span>
 						{/each}
 					</div>
 				</div>
@@ -115,7 +115,7 @@
 				<RadioGroup.Root class="flex flex-wrap items-center gap-2" bind:value={resolution}>
 					{#each Object.entries(RESOLUTIONS) as [name, res] (name)}
 						<RadioGroup.Item
-							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs text-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
 							value={name}
 						>
 							<span class="font-medium">{name.toUpperCase()}</span>
@@ -134,7 +134,7 @@
 				<RadioGroup.Root class="flex items-center gap-2" bind:value={format}>
 					{#each ["png", "jpg", "webp", "avif"] as format (format)}
 						<RadioGroup.Item
-							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs text-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
 							value={format}
 						>
 							{format.toUpperCase()}
@@ -144,7 +144,7 @@
 			</div>
 
 			<button
-				class="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-white px-6 py-3 text-sm font-medium hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+				class="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-neutral-50 px-6 py-3 text-sm font-medium text-neutral-950 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 				type="button"
 				onclick={handleDownload}
 				disabled={downloading}
