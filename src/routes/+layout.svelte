@@ -1,19 +1,28 @@
 <script lang="ts">
+	import favicon from "$lib/assets/favicon.svg";
+	import logo from "$lib/assets/favicon.svg?raw";
 	import "../app.css";
 
 	const { children } = $props();
 </script>
 
-<header class="fixed inset-x-0 top-0 z-50 border-b backdrop-blur-2xl">
-	<div class="mx-auto max-w-7xl p-4">
+<header class="absolute inset-x-0 top-0 z-50">
+	<div class="mx-auto flex items-center justify-between px-12 py-4">
 		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-		<a href="/">
-			<span class="text-xl/none font-bold text-neutral-50">
-				square<span class="text-neutral-400">spill</span>
-			</span>
+		<a class="inline-block size-8" href="/">
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+			{@html logo}
+		</a>
+
+		<a class="flex items-center" href="https://github.com/olivermrose/squarespill" target="_blank">
+			request a wallpaper
 		</a>
 	</div>
 </header>
+
+<svelte:head>
+	<link rel="icon" type="image/svg+xml" href={favicon} />
+</svelte:head>
 
 <main>
 	{@render children?.()}
