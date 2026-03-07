@@ -1,13 +1,8 @@
 <script lang="ts">
-	import favicon from "$lib/assets/favicon.svg";
 	import "../app.css";
 
 	const { children } = $props();
 </script>
-
-<svelte:head>
-	<link rel="icon" href={favicon} />
-</svelte:head>
 
 <header class="fixed inset-x-0 top-0 z-50 border-b backdrop-blur-2xl">
 	<div class="mx-auto max-w-7xl p-4">
