@@ -4,9 +4,22 @@
 
 :root {
 	font-family: InterVariable, sans-serif;
+	/* prettier-ignore */
+	font-feature-settings:
+		"calt", /* Contextual alternatives */
+		"cv05", /* Lowercase L with tail */
+		"cv10", /* Capital G with spur */
+		"cv11", /* Single-story a */
+		"liga", /* Standard ligatures */
+		"ss01", /* Open digits */
+		"ss07"; /* Square punctuation */
 }
 
 @layer base {
+	* {
+		border-color: --alpha(var(--color-neutral-500) / 20%);
+	}
+
 	button {
 		cursor: pointer;
 	}
