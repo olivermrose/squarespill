@@ -29,7 +29,7 @@
 
 <input
 	id="search"
-	class="block w-full border-y bg-transparent px-4 py-3 outline-none placeholder:text-neutral-500"
+	class="block w-full border-y bg-transparent px-4 py-3 font-mono outline-none placeholder:text-neutral-500"
 	type="search"
 	placeholder="Search by title, artist, or tag..."
 	bind:value={query}

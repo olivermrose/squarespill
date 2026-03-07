@@ -41,7 +41,9 @@
 				Non reprehenderit in ea excepteur.
 			</h1>
 
-			<p class="mt-3 text-lg text-neutral-300/80">Cupidatat voluptate ullamco dolore tempor.</p>
+			<p class="mt-3 font-mono text-lg text-neutral-300/80">
+				Cupidatat voluptate ullamco dolore tempor.
+			</p>
 		</hgroup>
 	</div>
 </section>

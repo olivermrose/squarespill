@@ -95,7 +95,7 @@
 				<div class="space-y-2">
 					<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
 						<Tag class="size-3" />
-						<span>Tags</span>
+						<span class="font-mono">Tags</span>
 					</div>
 
 					<div class="flex flex-wrap gap-1.5">
@@ -109,13 +109,13 @@
 			<div class="space-y-2">
 				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
 					<Monitor class="size-3" />
-					<span>Resolution</span>
+					<span class="font-mono">Resolution</span>
 				</div>
 
 				<RadioGroup.Root class="flex flex-wrap items-center gap-2" bind:value={resolution}>
 					{#each Object.entries(RESOLUTIONS) as [name, res] (name)}
 						<RadioGroup.Item
-							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
+							class="flex items-center border border-neutral-700 px-3 py-1.5 font-mono text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
 							value={name}
 						>
 							<span class="font-medium">{name.toUpperCase()}</span>
@@ -128,13 +128,13 @@
 			<div class="space-y-2">
 				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
 					<Eye class="size-3" />
-					<span>Format</span>
+					<span class="font-mono">Format</span>
 				</div>
 
 				<RadioGroup.Root class="flex items-center gap-2" bind:value={format}>
 					{#each ["png", "jpg", "webp", "avif"] as format (format)}
 						<RadioGroup.Item
-							class="flex items-center border border-neutral-700 px-3 py-1.5 text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
+							class="flex items-center border border-neutral-700 px-3 py-1.5 font-mono text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
 							value={format}
 						>
 							{format.toUpperCase()}
@@ -144,10 +144,10 @@
 			</div>
 
 			<button
-				class="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-neutral-50 px-6 py-3 text-sm font-medium text-neutral-950 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+				class="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-neutral-50 px-6 py-3 font-mono text-sm font-medium text-neutral-950 uppercase hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 				type="button"
-				onclick={handleDownload}
 				disabled={downloading}
+				onclick={handleDownload}
 			>
 				{#if downloading}
 					<Loader class="size-4 animate-spin" />
