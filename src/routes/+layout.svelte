@@ -33,7 +33,7 @@
 <div class="h-[15vw]" aria-hidden="true"></div>
 
 <footer
-	class="fixed inset-x-0 bottom-0 z-0 flex h-[80vh] items-end justify-center bg-blue-700 px-4"
+	class="fixed inset-x-0 bottom-0 z-0 flex h-screen items-end justify-center bg-neutral-950 px-4"
 >
 	<p class="font-pixel text-[15vw]/none text-neutral-50 uppercase">squarespill</p>
 </footer>
