@@ -10,6 +10,20 @@
 
 <svelte:head>
 	<link rel="icon" type="image/svg+xml" href={favicon} />
+
+	<title>squarespill</title>
+	<meta
+		name="description"
+		content="Visualize your taste. Extended cover arts as wallpapers, free to download."
+	/>
+
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://squarespill.com" />
+	<meta property="og:title" content="squarespill" />
+	<meta
+		property="og:description"
+		content="Visualize your taste. Extended cover arts as wallpapers, free to download."
+	/>
 </svelte:head>
 
 <header class="absolute inset-x-0 top-0 z-50">
