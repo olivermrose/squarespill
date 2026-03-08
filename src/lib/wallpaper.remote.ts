@@ -17,7 +17,7 @@ export const downloadWallpaper = command(
 	z.object({
 		file: z.string().regex(/^[\w-]+$/, "Invalid file name"),
 		format: z.enum(["png", "jpg", "webp", "avif"]),
-		resolution: z.enum(["fhd", "qhd", "uhd"]),
+		resolution: z.enum(["qhd", "hd", "hdplus", "fhd", "wqhd", "threek", "uhd4k", "fivek", "uhd8k"]),
 	}),
 	async (data) => {
 		const { width, height } = RESOLUTIONS[data.resolution];

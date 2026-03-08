@@ -15,7 +15,7 @@
 	const { wallpaper, onclose }: Props = $props();
 
 	let details = $state<HTMLDivElement>();
-	let resolution = $state<keyof typeof RESOLUTIONS>("uhd");
+	let resolution = $state<keyof typeof RESOLUTIONS>("uhd4k");
 	let format = $state<"png" | "jpg" | "webp" | "avif">("webp");
 	let downloading = $state(false);
 
@@ -123,12 +123,12 @@
 				</div>
 
 				<RadioGroup.Root class="flex flex-wrap items-center gap-2" bind:value={resolution}>
-					{#each Object.entries(RESOLUTIONS) as [name, res] (name)}
+					{#each Object.entries(RESOLUTIONS) as [key, res] (key)}
 						<RadioGroup.Item
-							class="flex items-center border border-neutral-700 px-3 py-1.5 font-mono text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
-							value={name}
+							class="flex items-center border border-neutral-700 px-3 py-1.5 font-mono text-xs normal-case data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
+							value={key}
 						>
-							<span class="font-medium">{name.toUpperCase()}</span>
+							<span class="font-medium">{res.label}</span>
 							<span class="ml-1 text-[10px] opacity-60">{res.width}x{res.height}</span>
 						</RadioGroup.Item>
 					{/each}
