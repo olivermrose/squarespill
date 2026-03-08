@@ -105,11 +105,11 @@
 
 			{#if wallpaper.tags?.length}
 				<div class="space-y-2">
-					<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
-						<span class="font-mono">Tags</span>
-					</div>
+					<span class="inline-block font-mono text-xs font-medium text-neutral-500 uppercase">
+						Tags
+					</span>
 
-					<div class="flex flex-wrap gap-1.5">
+					<div class="flex flex-wrap gap-2">
 						{#each wallpaper.tags as tag (tag)}
 							<span class="rounded-full bg-neutral-800 px-2.5 py-1 text-xs">tag</span>
 						{/each}
@@ -118,14 +118,14 @@
 			{/if}
 
 			<div class="space-y-2">
-				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
-					<span class="font-mono">Resolution</span>
-				</div>
+				<span class="inline-block font-mono text-xs font-medium text-neutral-500 uppercase">
+					Resolution
+				</span>
 
 				<RadioGroup.Root class="flex flex-wrap items-center gap-2" bind:value={resolution}>
 					{#each Object.entries(RESOLUTIONS) as [key, res] (key)}
 						<RadioGroup.Item
-							class="flex items-center border border-neutral-700 px-3 py-1.5 font-mono text-xs normal-case data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
+							class="flex items-center border border-neutral-700 px-3 text-xs normal-case data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
 							value={key}
 						>
 							<span class="font-medium">{res.label}</span>
@@ -136,14 +136,14 @@
 			</div>
 
 			<div class="space-y-2">
-				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
-					<span class="font-mono">Format</span>
-				</div>
+				<span class="inline-block font-mono text-xs font-medium text-neutral-500 uppercase">
+					Format
+				</span>
 
 				<RadioGroup.Root class="flex items-center gap-2" bind:value={format}>
 					{#each ["png", "jpg", "webp", "avif"] as format (format)}
 						<RadioGroup.Item
-							class="flex items-center border border-neutral-700 px-3 py-1.5 font-mono text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
+							class="border border-neutral-700 px-3 text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
 							value={format}
 						>
 							{format.toUpperCase()}
