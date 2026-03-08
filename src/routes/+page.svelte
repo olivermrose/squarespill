@@ -21,7 +21,7 @@
 	const heroWallpaper = $derived(data.wallpapers[heroIndex]);
 </script>
 
-<section id="hero" class="relative aspect-2/1 overflow-hidden">
+<section id="hero" class="relative aspect-2/1 overflow-hidden bg-neutral-950">
 	{#key heroIndex}
 		<img
 			class="absolute inset-0 h-full w-full object-cover"

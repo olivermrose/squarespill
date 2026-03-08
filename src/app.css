@@ -15,8 +15,9 @@
 		"ss07"; /* Square punctuation */
 }
 
-@theme {
-	--font-mono: "Geist Mono", monospace;
+@theme inline {
+	--font-mono: var(--font-geist-mono);
+	--font-pixel: var(--font-geist-pixel-circle);
 }
 
 @layer base {
