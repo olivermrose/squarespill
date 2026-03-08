@@ -2,7 +2,6 @@
 	import type { Wallpaper } from "$lib/server/db/schema";
 	import { R2_PUBLIC_URL, RESOLUTIONS } from "$lib/constants";
 	import { downloadWallpaper } from "$lib/wallpaper.remote";
-	import { Download, Eye, Loader, Monitor, Tag, X } from "@lucide/svelte";
 	import { RadioGroup } from "bits-ui";
 	import { motion } from "motion-sv";
 
@@ -78,7 +77,12 @@
 				aria-label="Close expanded view"
 				onclick={onclose}
 			>
-				<X class="size-4" />
+				<svg class="size-4" width="32" height="32" viewBox="0 0 24 24">
+					<path
+						fill="currentColor"
+						d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"
+					/>
+				</svg>
 			</button>
 		</div>
 
@@ -94,7 +98,6 @@
 			{#if wallpaper.tags?.length}
 				<div class="space-y-2">
 					<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
-						<Tag class="size-3" />
 						<span class="font-mono">Tags</span>
 					</div>
 
@@ -108,7 +111,6 @@
 
 			<div class="space-y-2">
 				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
-					<Monitor class="size-3" />
 					<span class="font-mono">Resolution</span>
 				</div>
 
@@ -127,7 +129,6 @@
 
 			<div class="space-y-2">
 				<div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500 uppercase">
-					<Eye class="size-3" />
 					<span class="font-mono">Format</span>
 				</div>
 
@@ -149,12 +150,6 @@
 				disabled={downloading}
 				onclick={handleDownload}
 			>
-				{#if downloading}
-					<Loader class="size-4 animate-spin" />
-				{:else}
-					<Download class="size-4" />
-				{/if}
-
 				{downloading ? "Downloading..." : "Download"}
 			</button>
 		</div>
