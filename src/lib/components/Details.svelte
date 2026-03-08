@@ -1,9 +1,11 @@
 <script lang="ts">
 	import type { Wallpaper } from "$lib/server/db/schema";
+	import { page } from "$app/state";
 	import { R2_PUBLIC_URL, RESOLUTIONS } from "$lib/constants";
-	import { downloadWallpaper } from "$lib/wallpaper.remote";
+	import { deleteWallpaper, downloadWallpaper, getWallpapers } from "$lib/wallpaper.remote";
 	import { RadioGroup } from "bits-ui";
 	import { motion } from "motion-sv";
+	import Edit from "./Edit.svelte";
 
 	interface Props {
 		wallpaper: Wallpaper;
@@ -12,10 +14,16 @@
 
 	const { wallpaper, onclose }: Props = $props();
 
-	let el = $state<HTMLDivElement>();
+	let details = $state<HTMLDivElement>();
 	let resolution = $state<keyof typeof RESOLUTIONS>("uhd");
 	let format = $state<"png" | "jpg" | "webp" | "avif">("webp");
 	let downloading = $state(false);
+
+	async function handleDelete() {
+		await deleteWallpaper(wallpaper.id);
+		await getWallpapers().refresh();
+		onclose();
+	}
 
 	async function handleDownload() {
 		downloading = true;
@@ -53,9 +61,9 @@
 	exit={{ height: 0 }}
 	transition={{ duration: 0.25, ease: "circOut" }}
 	onAnimationComplete={() => {
-		el?.scrollIntoView({ behavior: "smooth", block: "center" });
+		details?.scrollIntoView({ behavior: "smooth", block: "center" });
 	}}
-	bind:ref={el}
+	bind:ref={details}
 >
 	<motion.div
 		class="flex w-full flex-col md:flex-row"
@@ -144,14 +152,29 @@
 				</RadioGroup.Root>
 			</div>
 
-			<button
-				class="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-neutral-50 px-6 py-3 font-mono text-sm font-medium text-neutral-950 uppercase hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-				type="button"
-				disabled={downloading}
-				onclick={handleDownload}
-			>
-				{downloading ? "Downloading..." : "Download"}
-			</button>
+			<div class="mt-auto flex flex-wrap gap-2">
+				{#if page.data.admin}
+					<Edit {wallpaper} />
+
+					<button
+						class="grow bg-red-700/50 outline outline-red-700"
+						type="button"
+						onclick={handleDelete}
+					>
+						Delete
+					</button>
+				{/if}
+
+				<button
+					class="w-full py-3"
+					type="button"
+					disabled={downloading}
+					data-variant="primary"
+					onclick={handleDownload}
+				>
+					{downloading ? "Downloading..." : "Download"}
+				</button>
+			</div>
 		</div>
 	</motion.div>
 </motion.div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Wallpaper } from "$lib/server/db/schema";
-	import Download from "$lib/components/Download.svelte";
+	import Details from "$lib/components/Details.svelte";
 	import Tile from "$lib/components/Tile.svelte";
 	import { AnimatePresence } from "motion-sv";
 
@@ -29,7 +29,7 @@
 
 <input
 	id="search"
-	class="block w-full border-y bg-neutral-950 px-4 py-3 font-mono outline-none placeholder:text-neutral-500"
+	class="block w-full border-x-0 border-neutral-700/50 bg-neutral-950 px-6 py-4 text-base placeholder:font-mono placeholder:text-neutral-500"
 	type="search"
 	placeholder="Search by title, artist, or tag..."
 	bind:value={query}
@@ -43,7 +43,7 @@
 
 		<AnimatePresence>
 			{#if expanded}
-				<Download wallpaper={expanded} onclose={() => (selected = undefined)} />
+				<Details wallpaper={expanded} onclose={() => (selected = undefined)} />
 			{/if}
 		</AnimatePresence>
 	{/each}

@@ -19,6 +19,7 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1003.0",
+		"better-auth": "^1.5.4",
 		"geist-svelte": "^1.0.0",
 		"motion-sv": "^0.1.10",
 		"sharp": "^0.34.5",

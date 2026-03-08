@@ -1,24 +1,25 @@
 <script lang="ts">
 	import Gallery from "$lib/components/Gallery.svelte";
 	import { R2_PUBLIC_URL } from "$lib/constants";
+	import { getWallpapers } from "$lib/wallpaper.remote";
 	import { fade } from "svelte/transition";
 
-	const { data } = $props();
-
 	let heroIndex = $state(0);
+
+	// eslint-disable-next-line antfu/no-top-level-await
+	const wallpapers = $derived(await getWallpapers());
+	const heroWallpaper = $derived(wallpapers[heroIndex]);
 
 	$effect(() => {
 		let i = 0;
 
 		const interval = setInterval(() => {
-			i = (i + 1) % data.wallpapers.length;
+			i = (i + 1) % wallpapers.length;
 			heroIndex = i;
 		}, 5000);
 
 		return () => clearInterval(interval);
 	});
-
-	const heroWallpaper = $derived(data.wallpapers[heroIndex]);
 </script>
 
 <section id="hero" class="relative aspect-2/1 overflow-hidden bg-neutral-950">
@@ -46,4 +47,4 @@
 	</div>
 </section>
 
-<Gallery wallpapers={data.wallpapers} />
+<Gallery {wallpapers} />
