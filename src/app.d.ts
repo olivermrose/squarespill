@@ -1,4 +1,5 @@
 import type { auth } from "$lib/server/auth";
+import type { R2Bucket } from "@cloudflare/workers-types";
 
 type Session = typeof auth.$Infer.Session.session;
 type User = typeof auth.$Infer.Session.user;
@@ -12,7 +13,11 @@ declare global {
 		}
 		// interface PageData {}
 		// interface PageState {}
-		// interface Platform {}
+		interface Platform {
+			env: {
+				R2_BUCKET: R2Bucket;
+			};
+		}
 	}
 }
 

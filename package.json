@@ -19,7 +19,6 @@
 		"db:studio": "drizzle-kit studio"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.1003.0",
 		"better-auth": "^1.5.4",
 		"geist-svelte": "^1.0.0",
 		"motion-sv": "^0.1.10",
@@ -28,6 +27,7 @@
 	},
 	"devDependencies": {
 		"@antfu/eslint-config": "^7.6.1",
+		"@cloudflare/workers-types": "^4.20260313.1",
 		"@sveltejs/adapter-cloudflare": "^7.2.8",
 		"@sveltejs/kit": "^2.53.4",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
@@ -47,6 +47,7 @@
 		"svelte-check": "^4.4.4",
 		"tailwindcss": "^4.2.1",
 		"typescript": "^5.9.3",
-		"vite": "^7.3.1"
+		"vite": "^7.3.1",
+		"wrangler": "^4.73.0"
 	}
 }

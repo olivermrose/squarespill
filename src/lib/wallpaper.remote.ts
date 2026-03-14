@@ -1,5 +1,6 @@
+import type { Blob as CfBlob } from "@cloudflare/workers-types";
 import { Buffer } from "node:buffer";
-import { command, form, query } from "$app/server";
+import { command, form, getRequestEvent, query } from "$app/server";
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import sharp from "sharp";
@@ -7,7 +8,6 @@ import z from "zod";
 import { R2_PUBLIC_URL, RESOLUTIONS } from "./constants";
 import { db } from "./server/db";
 import { wallpapers } from "./server/db/schema";
-import { deleteFile, uploadFile } from "./server/r2";
 
 export const getWallpapers = query(async () => {
 	return await db.select().from(wallpapers).orderBy(wallpapers.title);
@@ -51,13 +51,19 @@ const wallpaperSchema = z.object({
 	tags: z.string().optional(),
 });
 
-const slugify = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+const slugify = (text: string) =>
+	text
+		.toLowerCase()
+		.normalize("NFKD")
+		.replace(/[^a-z0-9]+/g, "_");
 
 export const uploadWallpaper = form(wallpaperSchema, async (data) => {
-	const buffer = await ensureAvif(data.file);
+	const { platform } = getRequestEvent();
+
+	const blob = await ensureAvif(data.file);
 	const slug = `${slugify(data.title)}-${slugify(data.artist)}`;
 
-	await uploadFile(`${slug}.avif`, buffer);
+	await platform?.env.R2_BUCKET.put(`${slug}.avif`, blob);
 
 	await db.insert(wallpapers).values({
 		file: slug,
@@ -79,6 +85,7 @@ export const editWallpaper = form(
 		file: z.file().optional(),
 	}),
 	async (data) => {
+		const { platform } = getRequestEvent();
 		const [existing] = await db.select().from(wallpapers).where(eq(wallpapers.id, data.id));
 
 		if (!existing) {
@@ -88,14 +95,14 @@ export const editWallpaper = form(
 		let slug = existing.file;
 
 		if (data.file) {
-			const buffer = await ensureAvif(data.file);
+			const blob = await ensureAvif(data.file);
 			slug = `${slugify(data.title)}-${slugify(data.artist)}`;
 
 			if (existing.file !== slug) {
-				await deleteFile(`${existing.file}.avif`);
+				await platform?.env.R2_BUCKET.delete(`${existing.file}.avif`);
 			}
 
-			await uploadFile(`${slug}.avif`, buffer);
+			await platform?.env.R2_BUCKET.put(`${slug}.avif`, blob);
 		}
 
 		await db
@@ -117,24 +124,26 @@ export const editWallpaper = form(
 );
 
 export const deleteWallpaper = command(z.number(), async (id) => {
+	const { platform } = getRequestEvent();
 	const [existing] = await db.select().from(wallpapers).where(eq(wallpapers.id, id));
 
 	if (!existing) {
 		error(404, "Wallpaper not found");
 	}
 
-	await deleteFile(`${existing.file}.avif`);
+	await platform?.env.R2_BUCKET.delete(`${existing.file}.avif`);
 	await db.delete(wallpapers).where(eq(wallpapers.id, id));
 
 	return { success: true };
 });
 
 async function ensureAvif(file: File) {
-	let buffer = Buffer.from<ArrayBufferLike>(await file.arrayBuffer());
+	let buffer = Buffer.from(await file.arrayBuffer());
 
 	if (file.type !== "image/avif") {
+		// @ts-expect-error - generics
 		buffer = await sharp(buffer).avif({ quality: 60 }).toBuffer();
 	}
 
-	return buffer;
+	return new Blob([buffer], { type: "image/avif" }) as CfBlob;
 }
