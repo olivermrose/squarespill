@@ -1,21 +1,24 @@
-import type { auth } from "$lib/server/auth";
-import type { R2Bucket } from "@cloudflare/workers-types";
+import type { createAuth } from "$lib/server/auth";
+import type { D1Database, KVNamespace, R2Bucket } from "@cloudflare/workers-types";
 
-type Session = typeof auth.$Infer.Session.session;
-type User = typeof auth.$Infer.Session.user;
+type Auth = ReturnType<typeof createAuth>;
 
 declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			user: User | null;
-			session: Session | null;
+			db: D1Database;
+			auth: Auth;
+			user: Auth["$Infer"]["Session"]["user"] | null;
+			session: Auth["$Infer"]["Session"]["session"] | null;
 		}
 		// interface PageData {}
 		// interface PageState {}
 		interface Platform {
 			env: {
-				R2_BUCKET: R2Bucket;
+				DB: D1Database;
+				KV: KVNamespace;
+				R2: R2Bucket;
 			};
 		}
 	}

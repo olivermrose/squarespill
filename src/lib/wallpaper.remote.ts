@@ -2,27 +2,38 @@ import type { Blob as CfBlob } from "@cloudflare/workers-types";
 import { Buffer } from "node:buffer";
 import { command, form, getRequestEvent, query } from "$app/server";
 import { error } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
 import sharp from "sharp";
 import z from "zod";
 import { R2_PUBLIC_URL, RESOLUTIONS } from "./constants";
-import { db } from "./server/db";
-import { wallpapers } from "./server/db/schema";
+
+export interface Wallpaper {
+	id: number;
+	slug: string;
+	title: string;
+	artist: string;
+	tags: string | null;
+}
 
 export const getWallpapers = query(async () => {
-	return await db.select().from(wallpapers).orderBy(wallpapers.title);
+	const { locals } = getRequestEvent();
+
+	const rv = await locals.db
+		.prepare("SELECT * FROM wallpapers ORDER BY title COLLATE NOCASE")
+		.all<Wallpaper>();
+
+	return rv.results;
 });
 
 export const downloadWallpaper = command(
 	z.object({
-		file: z.string().regex(/^[\w-]+$/, "Invalid file name"),
+		slug: z.string(),
 		format: z.enum(["png", "jpg", "webp", "avif"]),
 		resolution: z.enum(["qhd", "hd", "hdplus", "fhd", "wqhd", "threek", "uhd4k", "fivek", "uhd8k"]),
 	}),
 	async (data) => {
 		const { width, height } = RESOLUTIONS[data.resolution];
 
-		const response = await fetch(`${R2_PUBLIC_URL}/${data.file}.avif`);
+		const response = await fetch(`${R2_PUBLIC_URL}/${data.slug}.avif`);
 
 		if (!response.ok) {
 			error(response.status, "Failed to fetch wallpaper");
@@ -39,7 +50,7 @@ export const downloadWallpaper = command(
 		return {
 			data: output.toString("base64"),
 			mimeType: `image/${format}`,
-			filename: `${data.file}.${data.format}`,
+			filename: `${data.slug}.${data.format}`,
 		};
 	},
 );
@@ -63,18 +74,23 @@ export const uploadWallpaper = form(wallpaperSchema, async (data) => {
 	const blob = await ensureAvif(data.file);
 	const slug = `${slugify(data.title)}-${slugify(data.artist)}`;
 
-	await platform?.env.R2_BUCKET.put(`${slug}.avif`, blob);
+	const tags =
+		data.tags
+			?.split(",")
+			.map((t) => t.trim())
+			.filter(Boolean)
+			.join(",") || null;
 
-	await db.insert(wallpapers).values({
-		file: slug,
-		title: data.title,
-		artist: data.artist,
-		tags:
-			data.tags
-				?.split(",")
-				.map((t) => t.trim())
-				.filter(Boolean) ?? [],
-	});
+	await platform?.env.R2.put(`${slug}.avif`, blob);
+
+	await platform?.env.DB.prepare(
+		`INSERT INTO
+			wallpapers (slug, title, artist, tags)
+		VALUES
+			(?, ?, ?, ?)`,
+	)
+		.bind(slug, data.title, data.artist, tags)
+		.run();
 
 	return { success: true };
 });
@@ -86,38 +102,48 @@ export const editWallpaper = form(
 	}),
 	async (data) => {
 		const { platform } = getRequestEvent();
-		const [existing] = await db.select().from(wallpapers).where(eq(wallpapers.id, data.id));
+
+		const existing = await platform?.env.DB.prepare(`SELECT slug FROM wallpapers WHERE id = ?`)
+			.bind(data.id)
+			.first<{ slug: string }>();
 
 		if (!existing) {
 			error(404, "Wallpaper not found");
 		}
 
-		let slug = existing.file;
+		let slug = existing.slug;
 
 		if (data.file) {
 			const blob = await ensureAvif(data.file);
 			slug = `${slugify(data.title)}-${slugify(data.artist)}`;
 
-			if (existing.file !== slug) {
-				await platform?.env.R2_BUCKET.delete(`${existing.file}.avif`);
+			if (existing.slug !== slug) {
+				await platform?.env.R2.delete(`${existing.slug}.avif`);
 			}
 
-			await platform?.env.R2_BUCKET.put(`${slug}.avif`, blob);
+			await platform?.env.R2.put(`${slug}.avif`, blob);
 		}
 
-		await db
-			.update(wallpapers)
-			.set({
-				file: slug,
-				title: data.title,
-				artist: data.artist,
-				tags:
-					data.tags
-						?.split(",")
-						.map((t) => t.trim())
-						.filter(Boolean) ?? [],
-			})
-			.where(eq(wallpapers.id, data.id));
+		const tags =
+			data.tags
+				?.split(",")
+				.map((t) => t.trim())
+				.filter(Boolean)
+				.join(",") || null;
+
+		await platform?.env.DB.prepare(
+			`UPDATE
+				wallpapers
+			SET
+				slug = ?,
+				title = ?,
+				artist = ?,
+				tags = ?
+			WHERE
+				id = ?`,
+		)
+			.bind(slug, data.title, data.artist, tags, data.id)
+			.run();
 
 		return { success: true };
 	},
@@ -125,14 +151,18 @@ export const editWallpaper = form(
 
 export const deleteWallpaper = command(z.number(), async (id) => {
 	const { platform } = getRequestEvent();
-	const [existing] = await db.select().from(wallpapers).where(eq(wallpapers.id, id));
+
+	const existing = await platform?.env.DB.prepare(
+		`DELETE FROM wallpapers WHERE id = ? RETURNING slug`,
+	)
+		.bind(id)
+		.first<{ slug: string }>();
 
 	if (!existing) {
 		error(404, "Wallpaper not found");
 	}
 
-	await platform?.env.R2_BUCKET.delete(`${existing.file}.avif`);
-	await db.delete(wallpapers).where(eq(wallpapers.id, id));
+	await platform?.env.R2.delete(`${existing.slug}.avif`);
 
 	return { success: true };
 });

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Wallpaper } from "$lib/server/db/schema";
+	import type { Wallpaper } from "$lib/wallpaper.remote";
 	import { R2_PUBLIC_URL } from "$lib/constants";
 
 	interface Props {
@@ -26,7 +26,7 @@
 >
 	<img
 		class="object-cover transition-transform duration-500 group-hover:scale-105"
-		src="{R2_PUBLIC_URL}/{wallpaper.file}.avif"
+		src="{R2_PUBLIC_URL}/{wallpaper.slug}.avif"
 		alt="{wallpaper.title} by {wallpaper.artist}"
 	/>
 

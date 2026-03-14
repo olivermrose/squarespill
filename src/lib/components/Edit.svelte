@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Wallpaper } from "$lib/server/db/schema";
+	import type { Wallpaper } from "$lib/wallpaper.remote";
 	import { editWallpaper, getWallpapers } from "$lib/wallpaper.remote";
 	import { Dialog } from "bits-ui";
 

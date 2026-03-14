@@ -8,9 +8,24 @@
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare",
 	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_id": "f6e4872b-3fad-4c37-9d54-7ceb1f38bc5a",
+			"database_name": "squarespill",
+			"remote": true,
+		},
+	],
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			"id": "cfecec692d6b4347a07970a157969714",
+			"remote": true,
+		},
+	],
 	"r2_buckets": [
 		{
-			"binding": "R2_BUCKET",
+			"binding": "R2",
 			"bucket_name": "cover-art",
 			"remote": true,
 		},

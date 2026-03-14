@@ -26,7 +26,7 @@
 	{#key heroIndex}
 		<img
 			class="absolute inset-0 h-full w-full object-cover"
-			src="{R2_PUBLIC_URL}/{heroWallpaper.file}.avif"
+			src="{R2_PUBLIC_URL}/{heroWallpaper.slug}.avif"
 			alt=""
 			aria-hidden="true"
 			in:fade={{ duration: 1000 }}

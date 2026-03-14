@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Wallpaper } from "$lib/server/db/schema";
+	import type { Wallpaper } from "$lib/wallpaper.remote";
 	import Details from "$lib/components/Details.svelte";
 	import Tile from "$lib/components/Tile.svelte";
 	import { AnimatePresence } from "motion-sv";
@@ -18,10 +18,12 @@
 		if (!q) return wallpapers;
 
 		return wallpapers.filter((w) => {
+			const tags = w.tags?.split(",");
+
 			return (
 				w.title.toLowerCase().includes(q) ||
 				w.artist.toLowerCase().includes(q) ||
-				w.tags?.some((t) => t.toLowerCase().includes(q))
+				tags?.some((t) => t.toLowerCase().includes(q))
 			);
 		});
 	});

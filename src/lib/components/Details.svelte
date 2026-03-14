@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Wallpaper } from "$lib/server/db/schema";
+	import type { Wallpaper } from "$lib/wallpaper.remote";
 	import { page } from "$app/state";
 	import { R2_PUBLIC_URL, RESOLUTIONS } from "$lib/constants";
 	import { deleteWallpaper, downloadWallpaper, getWallpapers } from "$lib/wallpaper.remote";
@@ -30,7 +30,7 @@
 
 		try {
 			const result = await downloadWallpaper({
-				file: wallpaper.file,
+				slug: wallpaper.slug,
 				format,
 				resolution,
 			});
@@ -75,7 +75,7 @@
 		<div class="relative aspect-video w-full shrink-0 max-md:hidden md:max-w-3/5">
 			<img
 				class="h-full object-cover"
-				src="{R2_PUBLIC_URL}/{wallpaper.file}.avif"
+				src="{R2_PUBLIC_URL}/{wallpaper.slug}.avif"
 				alt="{wallpaper.title} by {wallpaper.artist}"
 				fetchpriority="high"
 			/>
