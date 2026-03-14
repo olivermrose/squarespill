@@ -2,7 +2,7 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "squarespill",
 	"main": ".svelte-kit/cloudflare/_worker.js",
-	"compatibility_flags": ["nodejs_als"],
+	"compatibility_flags": ["nodejs_als", "nodejs_compat"],
 	"compatibility_date": "2026-03-13",
 	"assets": {
 		"binding": "ASSETS",
