@@ -10,6 +10,7 @@ export async function handle({ event, resolve }) {
 	const auth = createAuth(event.platform);
 
 	event.locals.db = event.platform.env.DB;
+	event.locals.r2 = event.platform.env.R2;
 	event.locals.auth = auth;
 
 	const session = await auth.api.getSession({

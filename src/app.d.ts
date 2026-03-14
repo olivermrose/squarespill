@@ -8,6 +8,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			db: D1Database;
+			r2: R2Bucket;
 			auth: Auth;
 			user: Auth["$Infer"]["Session"]["user"] | null;
 			session: Auth["$Infer"]["Session"]["session"] | null;

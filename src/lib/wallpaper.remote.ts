@@ -66,10 +66,11 @@ const slugify = (text: string) =>
 	text
 		.toLowerCase()
 		.normalize("NFKD")
+		// eslint-disable-next-line e18e/prefer-static-regex
 		.replace(/[^a-z0-9]+/g, "_");
 
 export const uploadWallpaper = form(wallpaperSchema, async (data) => {
-	const { platform } = getRequestEvent();
+	const { locals } = getRequestEvent();
 
 	const blob = await ensureAvif(data.file);
 	const slug = `${slugify(data.title)}-${slugify(data.artist)}`;
@@ -81,14 +82,15 @@ export const uploadWallpaper = form(wallpaperSchema, async (data) => {
 			.filter(Boolean)
 			.join(",") || null;
 
-	await platform?.env.R2.put(`${slug}.avif`, blob);
+	await locals.r2.put(`${slug}.avif`, blob);
 
-	await platform?.env.DB.prepare(
-		`INSERT INTO
-			wallpapers (slug, title, artist, tags)
-		VALUES
-			(?, ?, ?, ?)`,
-	)
+	await locals.db
+		.prepare(
+			`INSERT INTO
+				wallpapers (slug, title, artist, tags)
+			VALUES
+				(?, ?, ?, ?)`,
+		)
 		.bind(slug, data.title, data.artist, tags)
 		.run();
 
@@ -101,9 +103,10 @@ export const editWallpaper = form(
 		file: z.file().optional(),
 	}),
 	async (data) => {
-		const { platform } = getRequestEvent();
+		const { locals } = getRequestEvent();
 
-		const existing = await platform?.env.DB.prepare(`SELECT slug FROM wallpapers WHERE id = ?`)
+		const existing = await locals.db
+			.prepare(`SELECT slug FROM wallpapers WHERE id = ?`)
 			.bind(data.id)
 			.first<{ slug: string }>();
 
@@ -118,10 +121,10 @@ export const editWallpaper = form(
 			slug = `${slugify(data.title)}-${slugify(data.artist)}`;
 
 			if (existing.slug !== slug) {
-				await platform?.env.R2.delete(`${existing.slug}.avif`);
+				await locals.r2.delete(`${existing.slug}.avif`);
 			}
 
-			await platform?.env.R2.put(`${slug}.avif`, blob);
+			await locals.r2.put(`${slug}.avif`, blob);
 		}
 
 		const tags =
@@ -131,17 +134,18 @@ export const editWallpaper = form(
 				.filter(Boolean)
 				.join(",") || null;
 
-		await platform?.env.DB.prepare(
-			`UPDATE
-				wallpapers
-			SET
-				slug = ?,
-				title = ?,
-				artist = ?,
-				tags = ?
-			WHERE
-				id = ?`,
-		)
+		await locals.db
+			.prepare(
+				`UPDATE
+					wallpapers
+				SET
+					slug = ?,
+					title = ?,
+					artist = ?,
+					tags = ?
+				WHERE
+					id = ?`,
+			)
 			.bind(slug, data.title, data.artist, tags, data.id)
 			.run();
 
@@ -150,11 +154,10 @@ export const editWallpaper = form(
 );
 
 export const deleteWallpaper = command(z.number(), async (id) => {
-	const { platform } = getRequestEvent();
+	const { locals } = getRequestEvent();
 
-	const existing = await platform?.env.DB.prepare(
-		`DELETE FROM wallpapers WHERE id = ? RETURNING slug`,
-	)
+	const existing = await locals.db
+		.prepare(`DELETE FROM wallpapers WHERE id = ? RETURNING slug`)
 		.bind(id)
 		.first<{ slug: string }>();
 
@@ -162,7 +165,7 @@ export const deleteWallpaper = command(z.number(), async (id) => {
 		error(404, "Wallpaper not found");
 	}
 
-	await platform?.env.R2.delete(`${existing.slug}.avif`);
+	await locals.r2.delete(`${existing.slug}.avif`);
 
 	return { success: true };
 });
