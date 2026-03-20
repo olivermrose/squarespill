@@ -28,6 +28,7 @@
 			class="absolute inset-0 h-full w-full object-cover"
 			src="{R2_PUBLIC_URL}/{heroWallpaper.slug}.avif"
 			alt=""
+			fetchpriority="high"
 			aria-hidden="true"
 			in:fade={{ duration: 1000 }}
 			out:fade={{ duration: 1000 }}

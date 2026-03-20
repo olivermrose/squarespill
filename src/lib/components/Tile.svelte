@@ -28,6 +28,8 @@
 		class="object-cover transition-transform duration-500 group-hover:scale-105"
 		src="{R2_PUBLIC_URL}/{wallpaper.slug}.avif"
 		alt="{wallpaper.title} by {wallpaper.artist}"
+		decoding="async"
+		loading="lazy"
 	/>
 
 	<div
