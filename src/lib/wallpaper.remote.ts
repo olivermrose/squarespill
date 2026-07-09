@@ -1,8 +1,6 @@
-import type { Blob as CfBlob } from "@cloudflare/workers-types";
-import { Buffer } from "node:buffer";
 import { command, form, getRequestEvent, query } from "$app/server";
+import { env } from "$env/dynamic/public";
 import { error } from "@sveltejs/kit";
-import sharp from "sharp";
 import z from "zod";
 import { R2_PUBLIC_URL, RESOLUTIONS } from "./constants";
 
@@ -39,16 +37,27 @@ export const downloadWallpaper = command(
 			error(response.status, "Failed to fetch wallpaper");
 		}
 
-		const buffer = await response.arrayBuffer();
 		const format = data.format === "jpg" ? "jpeg" : data.format;
 
-		const output = await sharp(buffer)
-			.resize(width, height, { fit: "cover" })
-			.toFormat(format)
-			.toBuffer();
+		const formData = new FormData();
+		formData.append("file", await response.blob());
+		formData.append("format", format);
+		formData.append("width", width.toString());
+		formData.append("height", height.toString());
+
+		const transformResponse = await fetch(`${env.PUBLIC_TRANSFORM_URL}/transform`, {
+			method: "POST",
+			body: formData,
+		});
+
+		if (!transformResponse.ok) {
+			error(transformResponse.status, "Failed to transform wallpaper");
+		}
+
+		const output = await transformResponse.text();
 
 		return {
-			data: output.toString("base64"),
+			data: output,
 			mimeType: `image/${format}`,
 			filename: `${data.slug}.${data.format}`,
 		};
@@ -171,12 +180,13 @@ export const deleteWallpaper = command(z.number(), async (id) => {
 });
 
 async function ensureAvif(file: File) {
-	let buffer = Buffer.from(await file.arrayBuffer());
+	const formData = new FormData();
+	formData.append("file", file);
 
-	if (file.type !== "image/avif") {
-		// @ts-expect-error - generics
-		buffer = await sharp(buffer).avif({ quality: 60 }).toBuffer();
-	}
+	const response = await fetch(`${env.PUBLIC_TRANSFORM_URL}/normalize`, {
+		method: "POST",
+		body: formData,
+	});
 
-	return new Blob([buffer], { type: "image/avif" }) as CfBlob;
+	return response.blob() as never;
 }
