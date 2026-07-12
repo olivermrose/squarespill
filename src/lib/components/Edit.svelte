@@ -40,12 +40,12 @@
 			<form
 				id="edit-wallpaper"
 				enctype="multipart/form-data"
-				{...editForm.enhance(async ({ form, submit }) => {
+				{...editForm.enhance(async ({ submit }) => {
 					saving = true;
 
 					try {
 						await submit().updates(getWallpapers());
-						form.reset();
+						editForm.element?.reset();
 					} finally {
 						open = false;
 						saving = false;

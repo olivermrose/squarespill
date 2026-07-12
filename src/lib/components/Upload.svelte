@@ -5,12 +5,12 @@
 	let open = $state(false);
 	let uploading = $state(false);
 
-	const uploadForm = uploadWallpaper.enhance(async ({ form, submit }) => {
+	const uploadForm = uploadWallpaper.enhance(async ({ submit }) => {
 		uploading = true;
 
 		try {
 			await submit().updates(getWallpapers());
-			form.reset();
+			uploadWallpaper.element?.reset();
 		} finally {
 			open = false;
 			uploading = false;
