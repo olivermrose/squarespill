@@ -40,7 +40,9 @@ export const downloadWallpaper = command(
 		const format = data.format === "jpg" ? "jpeg" : data.format;
 
 		const formData = new FormData();
-		formData.append("file", await response.blob());
+		const blob = await response.blob();
+
+		formData.append("file", new File([blob], `${data.slug}.avif`, { type: "image/avif" }));
 		formData.append("format", format);
 		formData.append("width", width.toString());
 		formData.append("height", height.toString());
@@ -181,7 +183,14 @@ export const deleteWallpaper = command(z.number(), async (id) => {
 
 async function ensureAvif(file: File) {
 	const formData = new FormData();
-	formData.append("file", file);
+	const buffer = await file.arrayBuffer();
+
+	formData.append(
+		"file",
+		new File([buffer], file.name || "upload", {
+			type: file.type || "application/octet-stream",
+		}),
+	);
 
 	const response = await fetch(`${env.PUBLIC_TRANSFORM_URL}/normalize`, {
 		method: "POST",
