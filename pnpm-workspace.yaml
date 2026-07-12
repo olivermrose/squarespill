@@ -3,3 +3,9 @@ shellEmulator: true
 trustPolicy: off
 onlyBuiltDependencies:
   - esbuild
+allowBuilds:
+  "@prisma/engines": false
+  esbuild: false
+  prisma: false
+  sharp: true
+  workerd: true
