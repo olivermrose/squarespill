@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Wallpaper } from "$lib/wallpaper.remote";
-	import { R2_PUBLIC_URL } from "$lib/constants";
+	import { R2_PUBLIC_URL, THUMBNAIL } from "$lib/constants";
 
 	interface Props {
 		wallpaper: Wallpaper;
@@ -25,9 +25,11 @@
 	}}
 >
 	<img
-		class="object-cover transition-transform duration-500 group-hover:scale-105"
-		src="{R2_PUBLIC_URL}/{wallpaper.slug}.avif"
+		class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+		src="{R2_PUBLIC_URL}/thumbnails/{wallpaper.slug}.avif"
 		alt="{wallpaper.title} by {wallpaper.artist}"
+		width={THUMBNAIL.width}
+		height={THUMBNAIL.height}
 		decoding="async"
 		loading="lazy"
 	/>

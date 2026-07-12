@@ -1,5 +1,7 @@
 export const R2_PUBLIC_URL = "https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.dev";
 
+export const THUMBNAIL = { width: 768, height: 432 } as const;
+
 export const RESOLUTIONS = {
 	qhd: { label: "qHD", width: 960, height: 540 },
 	hd: { label: "HD", width: 1280, height: 720 },

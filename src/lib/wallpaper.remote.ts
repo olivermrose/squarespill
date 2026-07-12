@@ -1,8 +1,9 @@
+import type { R2Bucket } from "@cloudflare/workers-types";
 import { command, form, getRequestEvent, query } from "$app/server";
 import { env } from "$env/dynamic/public";
 import { error } from "@sveltejs/kit";
 import z from "zod";
-import { R2_PUBLIC_URL, RESOLUTIONS } from "./constants";
+import { R2_PUBLIC_URL, RESOLUTIONS, THUMBNAIL } from "./constants";
 
 export interface Wallpaper {
 	id: number;
@@ -39,17 +40,18 @@ export const downloadWallpaper = command(
 
 		const format = data.format === "jpg" ? "jpeg" : data.format;
 
-		const formData = new FormData();
 		const blob = await response.blob();
 
-		formData.append("file", new File([blob], `${data.slug}.avif`, { type: "image/avif" }));
-		formData.append("format", format);
-		formData.append("width", width.toString());
-		formData.append("height", height.toString());
+		const body = formData({
+			file: new File([blob], `${data.slug}.avif`, { type: "image/avif" }),
+			format,
+			width: width.toString(),
+			height: height.toString(),
+		});
 
 		const transformResponse = await fetch(`${env.PUBLIC_TRANSFORM_URL}/transform`, {
 			method: "POST",
-			body: formData,
+			body,
 		});
 
 		if (!transformResponse.ok) {
@@ -94,6 +96,7 @@ export const uploadWallpaper = form(wallpaperSchema, async (data) => {
 			.join(",") || null;
 
 	await locals.r2.put(`${slug}.avif`, blob);
+	await generateThumbnail(locals.r2, slug, blob);
 
 	await locals.db
 		.prepare(
@@ -133,9 +136,11 @@ export const editWallpaper = form(
 
 			if (existing.slug !== slug) {
 				await locals.r2.delete(`${existing.slug}.avif`);
+				await locals.r2.delete(`thumbnails/${existing.slug}.avif`);
 			}
 
 			await locals.r2.put(`${slug}.avif`, blob);
+			await generateThumbnail(locals.r2, slug, blob);
 		}
 
 		const tags =
@@ -176,26 +181,63 @@ export const deleteWallpaper = command(z.number(), async (id) => {
 		error(404, "Wallpaper not found");
 	}
 
-	await locals.r2.delete(`${existing.slug}.avif`);
+	await locals.r2.delete([`${existing.slug}.avif`, `thumbnails/${existing.slug}.avif`]);
 
 	return { success: true };
 });
 
+async function generateThumbnail(r2: R2Bucket, slug: string, source: Blob) {
+	const body = formData({
+		file: new File([source], `${slug}.avif`, { type: "image/avif" }),
+		format: "avif",
+		width: THUMBNAIL.width.toString(),
+		height: THUMBNAIL.height.toString(),
+	});
+
+	const response = await fetch(`${env.PUBLIC_TRANSFORM_URL}/transform`, {
+		method: "POST",
+		body,
+	});
+
+	if (!response.ok) {
+		error(response.status, "Failed to generate thumbnail");
+	}
+
+	const base64 = await response.text();
+	const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+
+	await r2.put(`thumbnails/${slug}.avif`, bytes, {
+		httpMetadata: { contentType: "image/avif" },
+	});
+}
+
 async function ensureAvif(file: File) {
-	const formData = new FormData();
 	const buffer = await file.arrayBuffer();
 
-	formData.append(
-		"file",
-		new File([buffer], file.name || "upload", {
+	const body = formData({
+		file: new File([buffer], file.name || "upload", {
 			type: file.type || "application/octet-stream",
 		}),
-	);
+	});
 
 	const response = await fetch(`${env.PUBLIC_TRANSFORM_URL}/normalize`, {
 		method: "POST",
-		body: formData,
+		body,
 	});
 
 	return response.blob() as never;
+}
+
+function formData(data: Record<string, string | number | File>) {
+	const fd = new FormData();
+
+	for (const [key, value] of Object.entries(data)) {
+		if (value instanceof File) {
+			fd.append(key, value, value.name);
+		} else {
+			fd.append(key, value.toString());
+		}
+	}
+
+	return fd;
 }
