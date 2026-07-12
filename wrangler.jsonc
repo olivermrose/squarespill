@@ -10,6 +10,10 @@
 			"invocation_logs": true,
 		},
 	},
+	"vars": {
+		"BETTER_AUTH_URL": "https://squarespill.olivermrose.workers.dev",
+		"PUBLIC_TRANSFORM_URL": "https://squarespill-api.up.railway.app",
+	},
 	"assets": {
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare",
