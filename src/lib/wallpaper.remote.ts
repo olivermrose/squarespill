@@ -1,7 +1,6 @@
 import type { R2Bucket } from "@cloudflare/workers-types";
 import { command, form, getRequestEvent, query } from "$app/server";
 import { error } from "@sveltejs/kit";
-import sharp from "sharp";
 import z from "zod";
 import { THUMBNAIL } from "./constants";
 
@@ -13,6 +12,17 @@ export interface Wallpaper {
 	title: string;
 	artist: string;
 	tags: string | null;
+}
+
+let sharpModule: typeof import("sharp").default | undefined;
+
+async function getSharp() {
+	if (!sharpModule) {
+		const { default: s } = await import("sharp");
+		sharpModule = s;
+	}
+
+	return sharpModule;
 }
 
 export const getWallpapers = query(async () => {
@@ -155,6 +165,8 @@ export const deleteWallpaper = command(z.number(), async (id) => {
 });
 
 async function generateThumbnail(r2: R2Bucket, slug: string, source: Uint8Array<ArrayBuffer>) {
+	const sharp = await getSharp();
+
 	const thumbnail = await sharp(source)
 		.resize(THUMBNAIL.width, THUMBNAIL.height, { fit: "cover" })
 		.avif({ quality: AVIF_QUALITY })
@@ -171,6 +183,8 @@ async function ensureAvif(file: File) {
 	if (file.type === "image/avif") {
 		return buffer;
 	}
+
+	const sharp = await getSharp();
 
 	return new Uint8Array(await sharp(buffer).avif({ quality: AVIF_QUALITY }).toBuffer());
 }
