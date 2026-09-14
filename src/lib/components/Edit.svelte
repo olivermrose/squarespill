@@ -54,7 +54,10 @@
 			>
 				<div class="grid gap-4 sm:grid-cols-2">
 					<div class="sm:col-span-2">
-						<label class="mb-1 block font-mono text-xs text-neutral-400 uppercase" for="edit-file">
+						<label
+							class="mb-1 block font-mono text-xs text-neutral-400 uppercase"
+							for="edit-file"
+						>
 							Image
 						</label>
 
@@ -67,11 +70,18 @@
 					</div>
 
 					<div>
-						<label class="mb-1 block font-mono text-xs text-neutral-400 uppercase" for="edit-title">
+						<label
+							class="mb-1 block font-mono text-xs text-neutral-400 uppercase"
+							for="edit-title"
+						>
 							Title
 						</label>
 
-						<input id="edit-title" class="w-full" {...editForm.fields.title.as("text")} />
+						<input
+							id="edit-title"
+							class="w-full"
+							{...editForm.fields.title.as("text")}
+						/>
 					</div>
 
 					<div>
@@ -82,11 +92,18 @@
 							Artist
 						</label>
 
-						<input id="edit-artist" class="w-full" {...editForm.fields.artist.as("text")} />
+						<input
+							id="edit-artist"
+							class="w-full"
+							{...editForm.fields.artist.as("text")}
+						/>
 					</div>
 
 					<div class="sm:col-span-2">
-						<label class="mb-1 block font-mono text-xs text-neutral-400 uppercase" for="edit-tags">
+						<label
+							class="mb-1 block font-mono text-xs text-neutral-400 uppercase"
+							for="edit-tags"
+						>
 							Tags (comma-separated)
 						</label>
 

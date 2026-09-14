@@ -25,6 +25,7 @@ export async function GET({ params, locals, request }) {
 		return new Response(null, { status: 304, headers });
 	}
 
+	// oxlint-disable-next-line
 	return new Response(object.body as unknown as ReadableStream, { headers });
 }
 

@@ -97,7 +97,9 @@
 
 			{#if wallpaper.tags?.length}
 				<div class="space-y-2">
-					<span class="inline-block font-mono text-xs font-medium text-neutral-500 uppercase">
+					<span
+						class="inline-block font-mono text-xs font-medium text-neutral-500 uppercase"
+					>
 						Tags
 					</span>
 
@@ -121,7 +123,8 @@
 							value={key}
 						>
 							<span class="font-medium">{res.label}</span>
-							<span class="ml-1 text-[10px] opacity-60">{res.width}x{res.height}</span>
+							<span class="ml-1 text-[10px] opacity-60">{res.width}x{res.height}</span
+							>
 						</RadioGroup.Item>
 					{/each}
 				</RadioGroup.Root>

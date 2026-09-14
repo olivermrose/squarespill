@@ -1,11 +1,17 @@
-shellEmulator: true
-# eslint-disable-next-line pnpm/yaml-enforce-settings
-trustPolicy: off
-onlyBuiltDependencies:
-  - esbuild
 allowBuilds:
-  "@prisma/engines": false
-  esbuild: false
-  prisma: false
-  sharp: true
-  workerd: true
+    esbuild: false
+    sharp: true
+    workerd: true
+catalog:
+    vite: npm:@voidzero-dev/vite-plus-core@latest
+    vite-plus: latest
+minimumReleaseAgeExclude:
+    - "@voidzero-dev/*"
+    - vite-plus
+overrides:
+    vite: "catalog:"
+peerDependencyRules:
+    allowAny:
+        - vite
+    allowedVersions:
+        vite: "*"

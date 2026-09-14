@@ -68,7 +68,9 @@ async function resize(bitmap: ImageBitmap, width: number, height: number) {
 
 async function nativeEncode(canvas: OffscreenCanvas, type: string, quality: number) {
 	try {
-		const blob = await canvas.convertToBlob(type === "image/png" ? { type } : { type, quality });
+		const blob = await canvas.convertToBlob(
+			type === "image/png" ? { type } : { type, quality },
+		);
 
 		return blob.type === type ? blob : null;
 	} catch {
