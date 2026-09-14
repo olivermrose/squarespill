@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getWallpapers, uploadWallpaper } from "$lib/wallpaper.remote";
+	import { uploadWallpaper } from "$lib/wallpaper.remote";
 	import { Dialog } from "bits-ui";
 
 	let open = $state(false);
@@ -9,7 +9,7 @@
 		uploading = true;
 
 		try {
-			await submit().updates(getWallpapers());
+			await submit();
 			uploadWallpaper.element?.reset();
 		} finally {
 			open = false;

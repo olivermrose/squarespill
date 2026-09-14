@@ -69,6 +69,8 @@ export const uploadWallpaper = form(wallpaperSchema, async (data) => {
 		.bind(slug, data.title, data.artist, tags)
 		.run();
 
+	await getWallpapers().refresh();
+
 	return { success: true };
 });
 
@@ -129,6 +131,8 @@ export const editWallpaper = form(
 			)
 			.bind(slug, data.title, data.artist, tags, data.id)
 			.run();
+
+		await getWallpapers().refresh();
 
 		return { success: true };
 	},

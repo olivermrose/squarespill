@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Wallpaper } from "$lib/wallpaper.remote";
-	import { editWallpaper, getWallpapers } from "$lib/wallpaper.remote";
+	import { editWallpaper } from "$lib/wallpaper.remote";
 	import { Dialog } from "bits-ui";
 
 	interface Props {
@@ -44,7 +44,7 @@
 					saving = true;
 
 					try {
-						await submit().updates(getWallpapers());
+						await submit();
 						editForm.element?.reset();
 					} finally {
 						open = false;
