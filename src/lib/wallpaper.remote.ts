@@ -36,7 +36,6 @@ const slugify = (text: string) =>
 	text
 		.toLowerCase()
 		.normalize("NFKD")
-		// eslint-disable-next-line e18e/prefer-static-regex
 		.replace(/[^a-z0-9]+/g, "_");
 
 export const uploadWallpaper = form(wallpaperSchema, async (data) => {

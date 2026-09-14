@@ -6,7 +6,6 @@
 
 	let heroIndex = $state(0);
 
-	// eslint-disable-next-line antfu/no-top-level-await
 	const wallpapers = $derived(await getWallpapers());
 	const heroWallpaper = $derived(wallpapers[heroIndex]);
 

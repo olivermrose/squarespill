@@ -15,9 +15,7 @@
 
 <header class="absolute inset-x-0 top-0 z-50">
 	<div class="flex items-center justify-between px-8 py-4 md:px-12">
-		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 		<a class="inline-block size-8" href="/">
-			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html logo}
 		</a>
 
