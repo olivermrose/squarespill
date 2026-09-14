@@ -1,9 +1,11 @@
 import type { R2Bucket } from "@cloudflare/workers-types";
 import { command, form, getRequestEvent, query } from "$app/server";
-import { env } from "$env/dynamic/public";
 import { error } from "@sveltejs/kit";
+import sharp from "sharp";
 import z from "zod";
-import { R2_PUBLIC_URL, RESOLUTIONS, THUMBNAIL } from "./constants";
+import { THUMBNAIL } from "./constants";
+
+const AVIF_QUALITY = 60;
 
 export interface Wallpaper {
 	id: number;
@@ -23,51 +25,6 @@ export const getWallpapers = query(async () => {
 	return rv.results;
 });
 
-export const downloadWallpaper = command(
-	z.object({
-		slug: z.string(),
-		format: z.enum(["png", "jpg", "webp", "avif"]),
-		resolution: z.enum(["qhd", "hd", "hdplus", "fhd", "wqhd", "threek", "uhd4k", "fivek", "uhd8k"]),
-	}),
-	async (data) => {
-		const { width, height } = RESOLUTIONS[data.resolution];
-
-		const response = await fetch(`${R2_PUBLIC_URL}/${data.slug}.avif`);
-
-		if (!response.ok) {
-			error(response.status, "Failed to fetch wallpaper");
-		}
-
-		const format = data.format === "jpg" ? "jpeg" : data.format;
-
-		const blob = await response.blob();
-
-		const body = formData({
-			file: new File([blob], `${data.slug}.avif`, { type: "image/avif" }),
-			format,
-			width: width.toString(),
-			height: height.toString(),
-		});
-
-		const transformResponse = await fetch(`${env.PUBLIC_TRANSFORM_URL}/transform`, {
-			method: "POST",
-			body,
-		});
-
-		if (!transformResponse.ok) {
-			error(transformResponse.status, "Failed to transform wallpaper");
-		}
-
-		const output = await transformResponse.text();
-
-		return {
-			data: output,
-			mimeType: `image/${format}`,
-			filename: `${data.slug}.${data.format}`,
-		};
-	},
-);
-
 const wallpaperSchema = z.object({
 	file: z.file(),
 	title: z.string().trim(),
@@ -83,9 +40,13 @@ const slugify = (text: string) =>
 		.replace(/[^a-z0-9]+/g, "_");
 
 export const uploadWallpaper = form(wallpaperSchema, async (data) => {
+	if (!import.meta.env.DEV) {
+		error(500, "Wallpaper uploads need to be ran locally");
+	}
+
 	const { locals } = getRequestEvent();
 
-	const blob = await ensureAvif(data.file);
+	const bytes = await ensureAvif(data.file);
 	const slug = `${slugify(data.title)}-${slugify(data.artist)}`;
 
 	const tags =
@@ -95,8 +56,8 @@ export const uploadWallpaper = form(wallpaperSchema, async (data) => {
 			.filter(Boolean)
 			.join(",") || null;
 
-	await locals.r2.put(`${slug}.avif`, blob);
-	await generateThumbnail(locals.r2, slug, blob);
+	await locals.r2.put(`${slug}.avif`, bytes);
+	await generateThumbnail(locals.r2, slug, bytes);
 
 	await locals.db
 		.prepare(
@@ -131,7 +92,11 @@ export const editWallpaper = form(
 		let slug = existing.slug;
 
 		if (data.file) {
-			const blob = await ensureAvif(data.file);
+			if (!import.meta.env.DEV) {
+				error(500, "Wallpaper file edits need to be ran locally");
+			}
+
+			const bytes = await ensureAvif(data.file);
 			slug = `${slugify(data.title)}-${slugify(data.artist)}`;
 
 			if (existing.slug !== slug) {
@@ -139,8 +104,8 @@ export const editWallpaper = form(
 				await locals.r2.delete(`thumbnails/${existing.slug}.avif`);
 			}
 
-			await locals.r2.put(`${slug}.avif`, blob);
-			await generateThumbnail(locals.r2, slug, blob);
+			await locals.r2.put(`${slug}.avif`, bytes);
+			await generateThumbnail(locals.r2, slug, bytes);
 		}
 
 		const tags =
@@ -186,58 +151,23 @@ export const deleteWallpaper = command(z.number(), async (id) => {
 	return { success: true };
 });
 
-async function generateThumbnail(r2: R2Bucket, slug: string, source: Blob) {
-	const body = formData({
-		file: new File([source], `${slug}.avif`, { type: "image/avif" }),
-		format: "avif",
-		width: THUMBNAIL.width.toString(),
-		height: THUMBNAIL.height.toString(),
-	});
+async function generateThumbnail(r2: R2Bucket, slug: string, source: Uint8Array<ArrayBuffer>) {
+	const thumbnail = await sharp(source)
+		.resize(THUMBNAIL.width, THUMBNAIL.height, { fit: "cover" })
+		.avif({ quality: AVIF_QUALITY })
+		.toBuffer();
 
-	const response = await fetch(`${env.PUBLIC_TRANSFORM_URL}/transform`, {
-		method: "POST",
-		body,
-	});
-
-	if (!response.ok) {
-		error(response.status, "Failed to generate thumbnail");
-	}
-
-	const base64 = await response.text();
-	const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-
-	await r2.put(`thumbnails/${slug}.avif`, bytes, {
+	await r2.put(`thumbnails/${slug}.avif`, new Uint8Array(thumbnail), {
 		httpMetadata: { contentType: "image/avif" },
 	});
 }
 
 async function ensureAvif(file: File) {
-	const buffer = await file.arrayBuffer();
+	const buffer = new Uint8Array(await file.arrayBuffer());
 
-	const body = formData({
-		file: new File([buffer], file.name || "upload", {
-			type: file.type || "application/octet-stream",
-		}),
-	});
-
-	const response = await fetch(`${env.PUBLIC_TRANSFORM_URL}/normalize`, {
-		method: "POST",
-		body,
-	});
-
-	return response.blob() as never;
-}
-
-function formData(data: Record<string, string | number | File>) {
-	const fd = new FormData();
-
-	for (const [key, value] of Object.entries(data)) {
-		if (value instanceof File) {
-			fd.append(key, value, value.name);
-		} else {
-			fd.append(key, value.toString());
-		}
+	if (file.type === "image/avif") {
+		return buffer;
 	}
 
-	return fd;
+	return new Uint8Array(await sharp(buffer).avif({ quality: AVIF_QUALITY }).toBuffer());
 }

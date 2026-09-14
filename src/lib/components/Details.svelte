@@ -4,7 +4,7 @@
 	import { page } from "$app/state";
 	import { RESOLUTIONS, FORMATS } from "$lib/constants";
 	import { save, transform } from "$lib/download";
-	import { deleteWallpaper, downloadWallpaper, getWallpapers } from "$lib/wallpaper.remote";
+	import { deleteWallpaper, getWallpapers } from "$lib/wallpaper.remote";
 	import { RadioGroup } from "bits-ui";
 	import { motion } from "motion-sv";
 	import Edit from "./Edit.svelte";
@@ -35,29 +35,11 @@
 		downloading = true;
 
 		try {
-			let blob: Blob | undefined;
-
-			try {
-				({ blob } = await transform(wallpaper.slug, resolution, format));
-			} catch (error) {
-				// Falls through to the server so an engine we have not tested
-				// still produces a download.
-				console.warn("Local transform failed, falling back to the server", error);
-			}
-
-			if (!blob) {
-				const result = await downloadWallpaper({
-					slug: wallpaper.slug,
-					format,
-					resolution,
-				});
-
-				const bytes = Uint8Array.from(atob(result.data), (c) => c.charCodeAt(0));
-
-				blob = new Blob([bytes], { type: result.mimeType });
-			}
+			const { blob } = await transform(wallpaper.slug, resolution, format);
 
 			save(blob, `${wallpaper.slug}.${format}`);
+		} catch (error) {
+			throw new Error("Transform failed", { cause: error });
 		} finally {
 			downloading = false;
 		}

@@ -19,7 +19,6 @@
 		"better-auth": "^1.6.23",
 		"geist-svelte": "^1.0.2",
 		"motion-sv": "^0.1.13",
-		"sharp": "^0.35.3",
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
@@ -38,6 +37,7 @@
 		"prettier": "^3.9.5",
 		"prettier-plugin-svelte": "^4.1.1",
 		"prettier-plugin-tailwindcss": "^0.8.0",
+		"sharp": "^0.35.3",
 		"svelte": "^5.56.4",
 		"svelte-check": "^4.7.2",
 		"tailwindcss": "^4.3.2",
