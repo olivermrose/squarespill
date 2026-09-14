@@ -11,6 +11,8 @@
 	const heroWallpaper = $derived(wallpapers[heroIndex]);
 
 	$effect(() => {
+		void wallpapers.length;
+
 		let i = 0;
 
 		const interval = setInterval(() => {
