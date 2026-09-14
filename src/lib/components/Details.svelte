@@ -1,11 +1,14 @@
 <script lang="ts">
+	import type { Format } from "$lib/constants";
 	import type { Wallpaper } from "$lib/wallpaper.remote";
 	import { page } from "$app/state";
-	import { R2_PUBLIC_URL, RESOLUTIONS } from "$lib/constants";
+	import { RESOLUTIONS, FORMATS } from "$lib/constants";
+	import { save, transform } from "$lib/download";
 	import { deleteWallpaper, downloadWallpaper, getWallpapers } from "$lib/wallpaper.remote";
 	import { RadioGroup } from "bits-ui";
 	import { motion } from "motion-sv";
 	import Edit from "./Edit.svelte";
+	import { resolve } from "$app/paths";
 
 	interface Props {
 		wallpaper: Wallpaper;
@@ -14,14 +17,17 @@
 
 	const { wallpaper, onclose }: Props = $props();
 
+	const formats = Object.keys(FORMATS) as Format[];
+
 	let details = $state<HTMLDivElement>();
 	let resolution = $state<keyof typeof RESOLUTIONS>("uhd4k");
-	let format = $state<"png" | "jpg" | "webp" | "avif">("webp");
+	let format = $state<Format>("webp");
 	let downloading = $state(false);
 
 	async function handleDelete() {
 		await deleteWallpaper(wallpaper.id);
 		await getWallpapers().refresh();
+
 		onclose();
 	}
 
@@ -29,25 +35,29 @@
 		downloading = true;
 
 		try {
-			const result = await downloadWallpaper({
-				slug: wallpaper.slug,
-				format,
-				resolution,
-			});
+			let blob: Blob | undefined;
 
-			const bytes = Uint8Array.from(atob(result.data), (c) => c.charCodeAt(0));
-			const blob = new Blob([bytes], { type: result.mimeType });
-			const url = URL.createObjectURL(blob);
+			try {
+				({ blob } = await transform(wallpaper.slug, resolution, format));
+			} catch (error) {
+				// Falls through to the server so an engine we have not tested
+				// still produces a download.
+				console.warn("Local transform failed, falling back to the server", error);
+			}
 
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = result.filename;
+			if (!blob) {
+				const result = await downloadWallpaper({
+					slug: wallpaper.slug,
+					format,
+					resolution,
+				});
 
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
+				const bytes = Uint8Array.from(atob(result.data), (c) => c.charCodeAt(0));
 
-			URL.revokeObjectURL(url);
+				blob = new Blob([bytes], { type: result.mimeType });
+			}
+
+			save(blob, `${wallpaper.slug}.${format}`);
 		} finally {
 			downloading = false;
 		}
@@ -75,7 +85,7 @@
 		<div class="relative aspect-video w-full shrink-0 max-md:hidden md:max-w-3/5">
 			<img
 				class="h-full object-cover"
-				src="{R2_PUBLIC_URL}/{wallpaper.slug}.avif"
+				src={resolve("/w/[slug]", { slug: wallpaper.slug })}
 				alt="{wallpaper.title} by {wallpaper.artist}"
 				fetchpriority="high"
 			/>
@@ -141,12 +151,12 @@
 				</span>
 
 				<RadioGroup.Root class="flex items-center gap-2" bind:value={format}>
-					{#each ["png", "jpg", "webp", "avif"] as format (format)}
+					{#each formats as option (option)}
 						<RadioGroup.Item
 							class="border border-neutral-700 px-3 text-xs data-[state=checked]:bg-neutral-50 data-[state=checked]:text-neutral-950"
-							value={format}
+							value={option}
 						>
-							{format.toUpperCase()}
+							{option.toUpperCase()}
 						</RadioGroup.Item>
 					{/each}
 				</RadioGroup.Root>

@@ -2,6 +2,13 @@ export const R2_PUBLIC_URL = "https://pub-bc71cc8fa1a24722b2c791c26ee50fb9.r2.de
 
 export const THUMBNAIL = { width: 768, height: 432 } as const;
 
+export const FORMATS = {
+	png: "image/png",
+	jpg: "image/jpeg",
+	webp: "image/webp",
+	avif: "image/avif",
+} as const;
+
 export const RESOLUTIONS = {
 	qhd: { label: "qHD", width: 960, height: 540 },
 	hd: { label: "HD", width: 1280, height: 720 },
@@ -13,3 +20,6 @@ export const RESOLUTIONS = {
 	fivek: { label: "5K", width: 5120, height: 2880 },
 	uhd8k: { label: "8K UHD", width: 7680, height: 4320 },
 } as const;
+
+export type Format = keyof typeof FORMATS;
+export type Resolution = keyof typeof RESOLUTIONS;
